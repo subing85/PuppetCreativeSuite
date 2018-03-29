@@ -12,7 +12,7 @@
 
 	
 # Frameworks for 
-	> ... Framework
+	> Skeleton Framework
 
 	> ... Framework
 

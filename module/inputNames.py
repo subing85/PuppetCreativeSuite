@@ -18,7 +18,7 @@ example
 '''
 
 
-class Inputs (object) :
+class Names (object) :
     def __init__(self) :        
 
         #Global variables
@@ -26,7 +26,10 @@ class Inputs (object) :
         self._globalScale = 'GlobalScale'
         self._globals = 'Global'
         
-        self._jntRadius = 0.1
+        self._jointRadius = 0.1
+        self._nameStyle = (0, 1, 2)
+        #self._nameStyle = (1, 0, 2)
+        #self._nameStyle = (2, 1, 0)
                 
         self._cog = 'Cog'
         self._spine = 'Spine'
