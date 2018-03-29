@@ -13,7 +13,7 @@ Description
     constructor for Puppet Creative Suite
 '''
 
-from PuppetCreativeSuite import buildPuppet
+import buildPuppet
 reload(buildPuppet)
 
 def main():

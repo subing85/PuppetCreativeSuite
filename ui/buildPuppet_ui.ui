@@ -38,18 +38,6 @@
        </property>
        <item row="0" column="0">
         <widget class="QLabel" name="label_fitJoints">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>Fit Joints</string>
          </property>
@@ -76,18 +64,6 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_mirrorFitJoints">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>Mirror Fit Joints</string>
          </property>
@@ -124,18 +100,6 @@
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_twistJoints">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>Twist Joints</string>
          </property>
@@ -169,18 +133,6 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_jointRadius">
-         <property name="minimumSize">
-          <size>
-           <width>80</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>Joint Radius</string>
          </property>
@@ -248,18 +200,6 @@
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="label_worldControl">
-         <property name="minimumSize">
-          <size>
-           <width>120</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>World Controls</string>
          </property>
@@ -289,18 +229,6 @@
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_rightControl">
-         <property name="minimumSize">
-          <size>
-           <width>120</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>Right Controls</string>
          </property>
@@ -311,18 +239,6 @@
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_leftControl">
-         <property name="minimumSize">
-          <size>
-           <width>120</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>Left Controls</string>
          </property>
@@ -366,18 +282,6 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="label_centerControl">
-         <property name="minimumSize">
-          <size>
-           <width>120</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>Center Controls</string>
          </property>
@@ -446,18 +350,6 @@
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_controlScale">
-         <property name="minimumSize">
-          <size>
-           <width>120</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>16777215</height>
-          </size>
-         </property>
          <property name="text">
           <string>Control Global Scale</string>
          </property>

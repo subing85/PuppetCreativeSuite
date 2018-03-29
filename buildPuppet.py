@@ -13,16 +13,15 @@ Description
     This basi core module for Puppet Creative Suite
  
 example   
-from publish import studioPublish
-reload(studioPublish)
-window = studioPublish.Publish(types='compositing')
-window.show ()      
-
+from PuppetCreativeSuite import buildPuppet
+reload(buildPuppet)
+buildPuppet.runMayaUiDemo()   
 '''
 
 import sys
 import os
 import datetime
+import warnings
 from functools import partial
 
 from PySide import QtGui
@@ -30,11 +29,18 @@ from PySide import QtCore
 from PySide import QtUiTools
 import shiboken
 
+from module import openStyleSheet
+reload(openStyleSheet)
+
+from module import collectBundels
+reload(collectBundels)
+
 from maya import cmds
 from maya import mel
 from pymel import core as pymel
 from maya import OpenMayaUI as omu
 from maya import OpenMaya as om
+
 
 CURRENT_PATH = os.path.join (os.path.dirname (__file__))
 UI_PATH = os.path.join (CURRENT_PATH, 'ui', 'buildPuppet_ui.ui')
@@ -67,6 +73,11 @@ def runMayaUiDemo():
 
 class Puppet (QtGui.QMainWindow):
     
+    '''
+        Description            
+            Function for Load Ui File and passing signals from Ui to Maya core.    
+    '''
+    
     def __init__(self):
         super(Puppet, self).__init__(MAINWINDOW)
 
@@ -78,6 +89,78 @@ class Puppet (QtGui.QMainWindow):
         uifile.close()
         self.ui.setAttribute (QtCore.Qt.WA_DeleteOnClose, True)
         self.ui.show ()
+        
+        
+        try :
+            styleSheet = openStyleSheet.StyleSheet (self.ui)
+            styleSheet.setStyleSheet ()            
+        except :
+            pass  
+        
+        self._fitSkeleyonPath =  os.path.join (CURRENT_PATH, 'resources')
+        
+        self.loadFitSkeletons()
+
+        
+        self.ui.button_fitJoints.clicked.connect (self.createFitJoints)
+    
+    
+    def loadFitSkeletons (self):   
+        
+        '''
+        Description
+            Function for collect the Fit Skeleton modules from resources and load to QComboBox                        
+            :Type - class function (method)            
+            :param   None
+            :attribute _fitSkeletons    <dict>    Example {'NAME': module}
+            :return  None
+        '''    
+       
+        validateBundle = collectBundels.Bundles (path=self._fitSkeleyonPath, moduleType='Fit Skeleton', bundelType='validate')           
+        self._validBuldle = validateBundle.getValidBundles ()         
+        result = collectBundels.reorder (self._validBuldle, 'ORDER')    
+        
+        #print 'self._validBuldle', self._validBuldle
+        
+        self.ui.comboBox_fitJoints.clear()         
+        #self.ui.comboBox_fitJoints.addItem('None')
+        
+        self._fitSkeletons = {}
+                
+        for ing, module in result.items () :
+            currentModule = self._validBuldle[module]                    
+            self.ui.comboBox_fitJoints.addItem(currentModule['NAME'])
+            self._fitSkeletons.setdefault(currentModule['NAME'], currentModule)
+            
+
+    def createFitJoints (self):     
+           
+        currentSkeleton = str(self.ui.comboBox_fitJoints.currentText())
+        
+        if currentSkeleton=='None':            
+            warnings.warn ('Current skeleton does not valid') 
+            return None        
+        
+        bundle = self._fitSkeletons[currentSkeleton]  
+
+        executeModule = 'from {} import {}\nreload({})\nresult = {}.{}()\nresult.createSkeleton()'.format ( 'resources', 
+                                                                                                            bundle['__name__'], 
+                                                                                                            bundle['__name__'], 
+                                                                                                            bundle['__name__'],
+                                                                                                            bundle['CLASS'])
+                  
+        #=======================================================================
+        # currentModule = 'from {} import {}\nresult = {}.{}()\nresult.createSkeleton()'.format ( 'resources', 
+        #                                                                                         bundle['__name__'], 
+        #                                                                                         bundle['__name__'],
+        #                                                                                         bundle['CLASS'])  
+        #=======================================================================        
+       
+        try :        
+            exec (executeModule)
+        except Exception as exceptResult:   
+            raise Exception ('fit skeleton create error', exceptResult)             
+        
         
         
 #End##################################################################################
