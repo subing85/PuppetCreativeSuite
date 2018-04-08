@@ -15,7 +15,7 @@ Description
 '''
 
 NAME = 'Template'
-ORDER = 1
+ORDER = 3
 MODULE_TYPE = 'Fit Skeleton'
 TYPE = 'validate'
 DATE = 'March 29, 2018'

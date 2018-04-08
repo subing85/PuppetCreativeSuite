@@ -35,6 +35,9 @@ reload(openStyleSheet)
 from module import collectBundels
 reload(collectBundels)
 
+from module import openGeneric
+reload (openGeneric)
+
 from maya import cmds
 from maya import mel
 from pymel import core as pymel
@@ -97,12 +100,16 @@ class Puppet (QtGui.QMainWindow):
         except :
             pass  
         
-        self._fitSkeleyonPath =  os.path.join (CURRENT_PATH, 'resources')
-        
-        self.loadFitSkeletons()
-
-        
+        self._fitSkeleyonPath =  os.path.join (CURRENT_PATH, 'resources') 
+               
+        self.loadFitSkeletons()       
+         
         self.ui.button_fitJoints.clicked.connect (self.createFitJoints)
+        self.ui.button_lableOn.clicked.connect (partial (self.lableVisibility, True))
+        self.ui.button_lableOff.clicked.connect (partial (self.lableVisibility, False))
+        self.ui.button_updateTwistJoints.clicked.connect (self.updateTwistJoints)
+        self.ui.spinBox_jointRadius.valueChanged.connect (self.setJointRadius)
+        self.ui.button_jointRadiusReset.clicked.connect (self.jointRadiusReset)
     
     
     def loadFitSkeletons (self):   
@@ -118,12 +125,11 @@ class Puppet (QtGui.QMainWindow):
        
         validateBundle = collectBundels.Bundles (path=self._fitSkeleyonPath, moduleType='Fit Skeleton', bundelType='validate')           
         self._validBuldle = validateBundle.getValidBundles ()         
-        result = collectBundels.reorder (self._validBuldle, 'ORDER')    
-        
+        result = collectBundels.reorder (self._validBuldle, 'ORDER')            
         #print 'self._validBuldle', self._validBuldle
         
         self.ui.comboBox_fitJoints.clear()         
-        #self.ui.comboBox_fitJoints.addItem('None')
+        #self.ui.comboBox_fitJoints.addItem('None')      
         
         self._fitSkeletons = {}
                 
@@ -159,7 +165,37 @@ class Puppet (QtGui.QMainWindow):
         try :        
             exec (executeModule)
         except Exception as exceptResult:   
-            raise Exception ('fit skeleton create error', exceptResult)             
+            raise Exception ('fit skeleton create error', exceptResult)
+        
+    
+    def lableVisibility (self, value):
+        
+        generic = openGeneric.Generic()        
+        generic.jointLabelVisibility(value)
+        
+        
+    def updateTwistJoints (self):
+        currentJoints = pymel.ls(sl=True)
+        value = int(self.ui.spinBox_twistJoints.value())       
+        
+        generic = openGeneric.Generic()        
+        generic.splitJoints(currentJoints, value)        
+        
+        
+    def jointRadiusReset (self):
+        
+        value = 0.1     
+        self.ui.spinBox_jointRadius.setValue (value)
+        generic = openGeneric.Generic()        
+        generic.setJointRadius(value)  
+        
+        
+    def setJointRadius (self):
+        value = float (self.ui.spinBox_jointRadius.value())        
+        generic = openGeneric.Generic()        
+        generic.setJointRadius(value)          
+        
+                    
         
         
         

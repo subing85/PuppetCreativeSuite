@@ -17,6 +17,7 @@
 call environ.bat
 
 set PYTHONPATH=%PYTHONPATH%
+set PUPPETCS_PATH=%PUPPETCS_PATH%
 
 echo ""
 echo "................................................................"

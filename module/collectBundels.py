@@ -58,7 +58,8 @@ def collectBundles (path, moduleType, bundleType):
     bundleData = {}        
  
     for module_loader, name, ispkg in pkgutil.iter_modules([path]) :                       
-        loader = module_loader.find_module(name)         
+        loader = module_loader.find_module(name)    
+        
           
         module = loader.load_module (name)
         
@@ -81,7 +82,7 @@ def collectBundles (path, moduleType, bundleType):
         for moduleName, value in inspect.getmembers (module) :           
             moduleMembers.setdefault (moduleName, value)    
        
-        bundleData.setdefault (module, moduleMembers)
+        bundleData.setdefault (module, moduleMembers)        
        
     return bundleData
 

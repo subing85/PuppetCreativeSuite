@@ -30,18 +30,8 @@ class Names (object) :
         self._nameStyle = (0, 1, 2)
         #self._nameStyle = (1, 0, 2)
         #self._nameStyle = (2, 1, 0)
-                
-        self._cog = 'Cog'
-        self._spine = 'Spine'
-        self._chest = 'Chest'        
-        self._neck = 'Neck'
-        self._head = 'Head'        
-        
-        self._leg = 'Leg'
-        self._legFinger = 'LegFinger'  
-                      
+
         self._pelvis = 'Pelvis'
-        self._hip = 'Hip'
         self._knee = 'Knee'
         self._ankle = 'Ankle'
         self._legPoleVector = 'LegPoleVector'
@@ -51,10 +41,38 @@ class Names (object) :
         self._toe = 'Toe'
         self._heel = 'Heel'
         self._pinkyToe = 'PinkyToe'
-        self._bigToe = 'BigToe'            
+        self._bigToe = 'BigToe' 
+        
+        self._hip = 'Hip'                 
+        self._cog = 'COG'
+        self._spine1 = 'Spine1'
+        self._spine2 = 'Spine2'
+        self._spine3 = 'Spine3'
+        
+        self._chest = 'Chest'        
+        self._neck = 'Neck'
+        self._head = 'Head'                
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+              
 
         self._arm = 'Arm'
         self._armFinger = 'ArmFinger'
+        
+        
+        
+        
+        
 
         self._clavicle = 'Clavicle'
         self._shoulder = 'Shoulder'
@@ -86,9 +104,9 @@ class Names (object) :
         self._joint = 'Jnt'
         self._fitJoint = 'FJnt'
         self._twist = 'Twist'
-        self._leftSide = 'LT'
-        self._rightSide = 'RT'
-        self._centerSide = 'CT'
+        self._leftSide = 'L'
+        self._rightSide = 'R'
+        self._centerSide = 'C'
         self._frontSide = 'FR'
         self._backSide = 'BK' 
 

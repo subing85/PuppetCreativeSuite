@@ -62,31 +62,8 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_mirrorFitJoints">
-         <property name="text">
-          <string>Mirror Fit Joints</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="button_mirrorFitJoints">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Mirror Across YZ</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="2">
-        <widget class="QPushButton" name="button_labelToggle">
+        <widget class="QPushButton" name="button_lableOff">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -94,7 +71,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Lable Toggle</string>
+          <string>Lable Off</string>
          </property>
         </widget>
        </item>
@@ -115,6 +92,15 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>11</number>
+         </property>
+         <property name="value">
+          <number>4</number>
          </property>
         </widget>
        </item>
@@ -141,19 +127,6 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QDoubleSpinBox" name="spinBox_jointRadius">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::NoButtons</enum>
-         </property>
-        </widget>
-       </item>
        <item row="3" column="2">
         <widget class="QPushButton" name="button_jointRadiusReset">
          <property name="sizePolicy">
@@ -164,6 +137,39 @@
          </property>
          <property name="text">
           <string>Reset</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="button_lableOn">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Label On</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_mirrorFitJoints">
+         <property name="text">
+          <string>Label</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QDoubleSpinBox" name="spinBox_jointRadius">
+         <property name="singleStep">
+          <double>0.050000000000000</double>
+         </property>
+         <property name="value">
+          <double>0.100000000000000</double>
          </property>
         </widget>
        </item>
@@ -191,17 +197,20 @@
        <property name="spacing">
         <number>5</number>
        </property>
-       <item row="3" column="2">
-        <widget class="QSlider" name="slider_centerControl">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_rightControl">
+         <property name="text">
+          <string>Right Controls</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_worldControl">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_leftControl">
          <property name="text">
-          <string>World Controls</string>
+          <string>Left Controls</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -227,20 +236,17 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_rightControl">
-         <property name="text">
-          <string>Right Controls</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <item row="3" column="2">
+        <widget class="QSlider" name="slider_centerControl">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_leftControl">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_worldControl">
          <property name="text">
-          <string>Left Controls</string>
+          <string>World Controls</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -266,30 +272,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QSlider" name="slider_leftControl">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QSlider" name="slider_rightControl">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_centerControl">
-         <property name="text">
-          <string>Center Controls</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="1">
         <widget class="QPushButton" name="button_rightControl">
          <property name="minimumSize">
@@ -306,6 +288,26 @@
          </property>
          <property name="text">
           <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_centerControl">
+         <property name="text">
+          <string>Center Controls</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_controlScale">
+         <property name="text">
+          <string>Control Global Scale</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -328,6 +330,20 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="2">
+        <widget class="QSlider" name="slider_rightControl">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QSlider" name="slider_leftControl">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
        <item row="4" column="2">
         <widget class="QSlider" name="slider_worldControl">
          <property name="orientation">
@@ -336,25 +352,37 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QDoubleSpinBox" name="spinBox_controlScale">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QSlider" name="horizontalSlider">
+         <property name="minimum">
+          <number>1</number>
          </property>
-         <property name="buttonSymbols">
-          <enum>QAbstractSpinBox::UpDownArrows</enum>
+         <property name="maximum">
+          <number>400</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_controlScale">
-         <property name="text">
-          <string>Control Global Scale</string>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="button_leftControl_2">
+         <property name="minimumSize">
+          <size>
+           <width>35</width>
+           <height>0</height>
+          </size>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <property name="maximumSize">
+          <size>
+           <width>35</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>100%</string>
          </property>
         </widget>
        </item>

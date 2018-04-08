@@ -28,6 +28,7 @@ set MAYA_PATH=C:/Program Files/Autodesk/%MAYA_VERSION%/bin/maya.exe
 set PYTHON_VERSION=2.7.6 64bit
 set PYTHON_PATH=C:/Program Files/Autodesk/%MAYA_VERSION%/bin/mayapy.exe
 set PYTHONPATH=Z:/Ashok/PuppetCreativeSuite
+set PUPPETCS_PATH=Z:/Ashok/PuppetCreativeSuite
 
 set MAYA_PLUG_IN_PATH=None 
 set MAYA_SCRIPT_PATH=None 

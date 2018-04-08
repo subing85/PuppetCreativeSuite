@@ -18,6 +18,7 @@ import warnings
 from pymel import core as pymel
 
 from module import inputNames
+from symbol import argument
 
 
 class Generic (object):
@@ -37,7 +38,8 @@ class Generic (object):
     ''' 
     
     def __init__(self):
-        pass
+        pass  
+       
     
     
     def nodeNameStyle (self, components, values=(0, 1, 2)):
@@ -99,13 +101,124 @@ class Generic (object):
         return currentJoint
     
     
+    def jointHasValid (self, joint):
+        
+        joint = pymel.PyNode (joint)    
+
+        if joint.type() != 'joint' :                
+            return False
+        
+        side = joint.getAttr('side')
+        type = joint.getAttr('type')
+        otherType = joint.getAttr('otherType')               
+
+        if side==3:
+            return False
+        
+        if type!=18:
+            return False
+        
+        if not otherType:
+            return False
+
+        return True
+
     
+    
+    def jointLabelVisibility (self, value):
+        pymel.undoInfo(openChunk=1)       
         
-           
+        joints = pymel.ls(type='joint') 
         
-                 
+        for eachJoint in joints:    
+                    
+            if not self.jointHasValid (eachJoint):
+                continue            
+            eachJoint.setAttr('drawLabel', value)
+            
+        pymel.select(cl=1)            
+        print 'jointLabelVisibility\t', value        
+        pymel.undoInfo(closeChunk=1)
+        
+    
+    def splitJoints (self, currentJoints, jointCount):
+        
+        '''
+        Description
+            Function for create Joint based on kwargs inputs                        
+            :Type - class function (method)            
+            :param   currentJoints    <list>    ['L_Pelvis', 'L_Knee']
+            :param   jointCount    <int>    4
+            :param   position   <tuple>    (0, 0, 0)
+            :param   name    <str>    example 'Puppet_Joint'
+            :param   dependency    <bool>    False
+            :return currentJoint    <pymelObject>    'Puppet_Joint'
+        '''          
+        
+
+        pymel.undoInfo(openChunk=1)
+        
+        if not currentJoints :
+            warnings.warn ('splitJoints\tcurrentJoints argument none or empty')
+            return None
+        
+        jointCount = jointCount + 1
+        
+        for eachJoint in currentJoints :            
+
+            if not self.jointHasValid (eachJoint):
+                continue
+            
+            jointRadius = eachJoint.getAttr('radius')            
+            childJoints = eachJoint.getChildren()
+            #x, y, z = eachJoint.getAttr('jointOrient')
+            
+            if not childJoints:
+                continue
+            
+            #start_xyz = eachJoint.getTranslation (p=True)
+            #end_xyz = childJoints[0].getTranslation (p=True)            
+            start_xyz = pymel.xform (eachJoint, q=1, a=1, ws=1, t=1)
+            end_xyz = pymel.xform (childJoints[0], q=1, a=1, ws=1, t=1)  
+            
+            jointVectorX = (end_xyz[0]- start_xyz[0])/jointCount
+            jointVectorY = (end_xyz[1]- start_xyz[1])/jointCount
+            jointVectorZ = (end_xyz[2]- start_xyz[2])/jointCount           
+            
+            #pymel.select (eachJoint, r=1)
+            splitJoints = [eachJoint]
+            for jntLoop in range (1, jointCount, 1) :
+                midPointX = start_xyz[0] + (jntLoop*jointVectorX)
+                midPointY = start_xyz[1] + (jntLoop*jointVectorY)
+                midPointZ = start_xyz[2] + (jntLoop*jointVectorZ)
                 
-    
+                pymel.select (cl=True)
+                twistJoint = pymel.joint (rad=jointRadius, o=(0,0,0), p=(midPointX, midPointY, midPointZ), n='{}_{}'.format (eachJoint, jntLoop))                         
+                twistJoint.setParent (splitJoints[-1])                 
+                twistJoint.setAttr('jointOrient', 0, 0, 0)      
+                twistJoint.setAttr('rotate', 0, 0, 0)                                
+                splitJoints.append (twistJoint)
+               
+            childJoints[0].setParent (splitJoints[-1])              
+                   
+        pymel.undoInfo(closeChunk=1)
+        
+        
+    def setJointRadius (self, value):
+        pymel.undoInfo(openChunk=1)
+        
+        joints = pymel.ls(type='joint')        
+        if not joints :
+            warnings.warn ('Joints are not exists in the scene.')
+            
+        pymel.select(cl=True) 
+        pymel.jointDisplayScale (1.0, a=True) 
+          
+        for eachJoint in joints :
+            eachJoint.setAttr('radius', value)
+            
+        pymel.undoInfo(closeChunk=1)
+
 
 def makeJoint(radius=None, orientation=None, position=None, name=None, dependency=None):
     
