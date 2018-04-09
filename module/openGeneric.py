@@ -18,7 +18,8 @@ import warnings
 from pymel import core as pymel
 
 from module import inputNames
-from symbol import argument
+
+reload(inputNames)
 
 
 class Generic (object):
@@ -38,18 +39,17 @@ class Generic (object):
     ''' 
     
     def __init__(self):
-        pass  
-       
+
+        self.input = inputNames.Names() 
+        
     
-    
-    def nodeNameStyle (self, components, values=(0, 1, 2)):
+    def getNameStyle (self, components):
         
         '''
         Description
             Function for manipulate the maya node name how to order the first, middle and end name                     
             :Type - class function (method)            
             :param   components    <list>    [first, middle, end]
-            :param   values    <tuple>    (0, 1, 2)
             :return result    <str>   ' first_middle_end'
         '''  
                 
@@ -57,48 +57,10 @@ class Generic (object):
         if not components :  
             warnings.warn ('nodeNameStyle argument called \"components\" None or empty')  
             return None
-                
+        
+        values = self.input._nameStyle                
         result = '{}_{}_{}'.format (components[values[0]], components[values[1]], components[values[2]])
         return result
-    
-    
-    def createJoint(self, **kwargs):
-        
-        '''
-        Description
-            Function for create Joint based on kwargs inputs                        
-            :Type - class function (method)            
-            :param   radius    <float>    example 1.0
-            :param   orientation    <tuple>    (0, 0, 0)
-            :param   position   <tuple>    (0, 0, 0)
-            :param   name    <str>    example 'Puppet_Joint'
-            :param   dependency    <bool>    False
-            :return currentJoint    <pymelObject>    'Puppet_Joint'
-        '''  
-        
-        radius = 1.0
-        if 'radius' in kwargs:
-            radius = kwargs['radius']            
-            
-        orientation = (0, 0, 0)
-        if 'orientation' in kwargs:
-            orientation = kwargs['orientation']            
-        
-        position =  (0, 0, 0)
-        if 'position' in kwargs:
-            position = kwargs['position']        
-
-        name = 'Puppet_Joint'
-        if 'name' in kwargs:
-            name = kwargs['name']
-            
-        dependency = False
-        if 'dependency' in kwargs:
-            dependency = kwargs['dependency'] 
-            
-        currentJoint = makeJoint (radius=radius, orientation=orientation, position=position, name=name, dependency=dependency) 
-        
-        return currentJoint
     
     
     def jointHasValid (self, joint):
@@ -122,8 +84,7 @@ class Generic (object):
             return False
 
         return True
-
-    
+        
     
     def jointLabelVisibility (self, value):
         pymel.undoInfo(openChunk=1)       
@@ -218,32 +179,97 @@ class Generic (object):
             eachJoint.setAttr('radius', value)
             
         pymel.undoInfo(closeChunk=1)
+        
+    
+    def getJointFromLabel(self, side, lable):
+        
+        joints = pymel.ls(type='joint')        
+        if not joints :
+            warnings.warn ('Joints are not exists in the scene.')
+            
+        labelJoint = []
+        
+        for eachJoint in joints :
+            if not self.jointHasValid (eachJoint):
+                continue
+            
+            currentSide = eachJoint.getAttr('side')            
+            currentLabel = eachJoint.getAttr('otherType')
+            
+            if currentSide!=side:
+                continue
+            
+            if currentLabel!=lable:
+                continue
+                        
+            labelJoint.append(eachJoint)
+            
+        if len(labelJoint)>1:
+            warnings.warn ('more than one joint exists as a same label.')            
+            return None
+            
+        return labelJoint
 
 
-def makeJoint(radius=None, orientation=None, position=None, name=None, dependency=None):
-    
-    '''
-    Description
-        Standalone Function for create Joint based on kwargs inputs                        
-        :Type - class function (method)            
-        :param   radius    <float>    example 1.0
-        :param   orientation    <tuple>    (0, 0, 0)
-        :param   position   <tuple>    (0, 0, 0)
-        :param   name    <str>    example 'Puppet_Joint'
-        :param   dependency    <bool>    False
-        :return currentJoint    <pymelObject>    'Puppet_Joint'
-    '''      
-    
-    if not dependency:
+    def createJoint(self, radius=None, name=None, position=None): 
+        
+        #pymel.undoInfo(openChunk=1) 
+               
         pymel.select (cl=True)
+                    
+        if pymel.objExists(name):
+            pymel.delete (pymel.ls(name))  
+                      
+        currentJoint = pymel.joint(rad=radius, o=(0,0,0), p=(0,0,0), n=name)        
+        self.snap(position, currentJoint)        
+        pymel.makeIdentity(currentJoint, a=1, t=0, r=1, s=0, n=0)        
+        #pymel.undoInfo(closeChunk=1)         
+        return currentJoint 
         
-    if pymel.objExists(name):
-        pymel.delete (pymel.ls(name))
-        
-    currentJoint = pymel.joint(rad=radius, o=orientation, p=position, n=name)
 
-    return currentJoint
+    def snap(self, source, target):   
         
+        try:           
+            constraint = pymel.parentConstraint(source, target, w=1)
+            pymel.delete(constraint)    
+        except Exception as result:
+            print result
+            
+            
+    def setParents(self, nodes):        
+        
+        for index in range (len(nodes)):            
+            
+            if index>len(nodes)-2:
+                continue
+                
+            child = pymel.PyNode(nodes[index+1])
+            parent = pymel.PyNode(nodes[index])
+            child.setParent(parent)
+            
+            
+    def createGroup(self, node, group):
+        
+        if pymel.objExists(group):
+            pymel.delete (pymel.ls(group))  
+        
+        group = pymel.group (em=1, n=group)
+        
+        if not node:
+            return group
+        
+        self.snap (node, group)        
+        node.setParent(group)
+        
+        return group
+        
+        
+            
+            
+            
+
+
+
         
 
 '''

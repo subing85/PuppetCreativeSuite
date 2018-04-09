@@ -33,6 +33,8 @@ from module import openStyleSheet
 from module import collectBundels
 from module import openGeneric
 from module import inputNames
+from module import openPySide
+
 from package import createLimb
 
 reload(openStyleSheet)
@@ -78,6 +80,11 @@ def runMayaUiDemo():
     Puppet ()
     
 
+def getMainWindow () :
+    for win in cmds.lsUI (wnd=1) :
+        if cmds.window (win, q=1, mw=1) :
+            return win   
+
 class Puppet (QtGui.QMainWindow):
     
     '''
@@ -87,47 +94,54 @@ class Puppet (QtGui.QMainWindow):
     
     def __init__(self):
         super(Puppet, self).__init__(MAINWINDOW)
-        
-        #Load Qt UI to maya
-        loader = QtUiTools.QUiLoader()
-        uifile = QtCore.QFile (UI_PATH)       
-        uifile.open (QtCore.QFile.ReadOnly)
-        self.ui = loader.load (uifile, MAINWINDOW)
-        uifile.close()
-        self.ui.setAttribute (QtCore.Qt.WA_DeleteOnClose, True)
-        #self.ui.show ()        
-        
-        mainWindow = pymel.lsUI (wnd=1)[0]        
-        #self.ui.setObjectName ('MainWindow') 
-        
-        if pymel.dockControl ('MainWindow', q=1, ex=1) :
-            pymel.deleteUI('MainWindow', ctl=1)
 
-        self.floatingLayout = pymel.paneLayout (cn='single', w=300, p=mainWindow)
+        if cmds.dockControl ('imageProjectionWin', q=1, ex=1) :
+            cmds.deleteUI('imageProjectionWin', ctl=1)
 
-        cmds.dockControl ('MainWindow', l='Smart Bake - v0.1', area='left', content=self.floatingLayout, allowedArea=['right', 'left'])        
-        cmds.control ('MainWindow', e=1, p=self.floatingLayout)
-         
-        try :
-            styleSheet = openStyleSheet.StyleSheet (self.ui)
-            styleSheet.setStyleSheet ()            
-        except :
-            pass  
-         
-        self._fitSkeleyonPath =  os.path.join (CURRENT_PATH, 'resources') 
-                
-        self.loadFitSkeletons()       
-        self.input = inputNames.Names()  
-          
-        self.ui.button_fitJoints.clicked.connect (self.createFitJoints)
-        self.ui.button_lableOn.clicked.connect (partial (self.lableVisibility, True))
-        self.ui.button_lableOff.clicked.connect (partial (self.lableVisibility, False))
-        self.ui.button_updateTwistJoints.clicked.connect (self.updateTwistJoints)
-        self.ui.spinBox_jointRadius.valueChanged.connect (self.setJointRadius)
-        self.ui.button_jointRadiusReset.clicked.connect (self.jointRadiusReset)
-     
-        self.ui.button_build.clicked.connect (self.build)
-        self.ui.button_reBuild.clicked.connect (self.reBuild)
+        self.setObjectName ('imageProjection_win')
+        self.floatingLayout         = cmds.paneLayout (cn='single', w=300, p=getMainWindow())
+
+        cmds.dockControl ('imageProjectionWin', l='Smart Bake - v0.1', area='right', content=self.floatingLayout, allowedArea=['right', 'left'])        
+        cmds.control ('imageProjection_win', e=1, p=self.floatingLayout)
+
+
+
+
+
+
+#===============================================================================
+#         #Load Qt UI to maya
+#         loader      = QtUiTools.QUiLoader()
+#         uifile      = QtCore.QFile (UI_PATH)       
+#         uifile.open (QtCore.QFile.ReadOnly)
+#         self.ui     = loader.load (uifile, MAINWINDOW)
+#         uifile.close()
+#         self.ui.setAttribute (QtCore.Qt.WA_DeleteOnClose, True)
+#         self.ui.show ()
+#         
+#         
+#         try :
+#             styleSheet = openStyleSheet.StyleSheet (self.ui)
+#             styleSheet.setStyleSheet ()            
+#         except :
+#             pass  
+#         
+#         self._fitSkeleyonPath =  os.path.join (CURRENT_PATH, 'resources') 
+#                
+#         self.loadFitSkeletons()       
+#         self.input = inputNames.Names() 
+# 
+#          
+#         self.ui.button_fitJoints.clicked.connect (self.createFitJoints)
+#         self.ui.button_lableOn.clicked.connect (partial (self.lableVisibility, True))
+#         self.ui.button_lableOff.clicked.connect (partial (self.lableVisibility, False))
+#         self.ui.button_updateTwistJoints.clicked.connect (self.updateTwistJoints)
+#         self.ui.spinBox_jointRadius.valueChanged.connect (self.setJointRadius)
+#         self.ui.button_jointRadiusReset.clicked.connect (self.jointRadiusReset)
+#     
+#         self.ui.button_build.clicked.connect (self.build)
+#         self.ui.button_reBuild.clicked.connect (self.reBuild)
+#===============================================================================
 
    
     def loadFitSkeletons (self):   
@@ -237,10 +251,9 @@ class Puppet (QtGui.QMainWindow):
         
         #create left leg puppet        
         limb = createLimb.Limb( side=self.input._leftSide,
-                                type=self.input._leg,
-                                start={self.input._pelvis: leftPelvis},
-                                middle={self.input._knee: leftKnee},
-                                end={self.input._ankle: leftAnkle})        
+                                start=leftPelvis,
+                                middle=leftKnee,
+                                end=leftAnkle)        
         limb.create()
 
         

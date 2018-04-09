@@ -30,6 +30,8 @@ class Names (object) :
         self._nameStyle = (0, 1, 2)
         #self._nameStyle = (1, 0, 2)
         #self._nameStyle = (2, 1, 0)
+        
+        self._leg = 'Leg'
 
         self._pelvis = 'Pelvis'
         self._knee = 'Knee'
@@ -53,17 +55,7 @@ class Names (object) :
         self._neck = 'Neck'
         self._head = 'Head'                
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
               
 
         self._arm = 'Arm'
@@ -112,8 +104,12 @@ class Names (object) :
 
         self._ik = 'IK'
         self._fk = 'FK'
+        self._dk = 'DK'
+        
         self._bind = 'Bind'
-        self._blend = 'Blend'       
+        self._blend = 'Blend'
+        
+        self._ikfkBlend = 'ikFkBlend'       
 
         self._configureJoint = 'ConfigureJoint'       
 
