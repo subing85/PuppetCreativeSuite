@@ -223,6 +223,11 @@ class Generic (object):
         currentJoint = pymel.joint(rad=radius, o=(0,0,0), p=(0,0,0), n=name)        
         self.snap(position, currentJoint)        
         pymel.makeIdentity(currentJoint, a=1, t=0, r=1, s=0, n=0)        
+        
+        if position.type()=='joint':
+            angleValue = position.getAttr('preferredAngle')
+            currentJoint.setAttr('preferredAngle', angleValue)
+            
         #pymel.undoInfo(closeChunk=1)         
         return currentJoint 
         

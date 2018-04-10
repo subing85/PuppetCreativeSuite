@@ -128,6 +128,9 @@ class Puppet (QtGui.QMainWindow):
      
         self.ui.button_build.clicked.connect (self.build)
         self.ui.button_reBuild.clicked.connect (self.reBuild)
+        
+        self.ui.slider_controlScale.valueChanged.connect (self.controlScale)
+        self.ui.button_controlScale.clicked.connect (self.resetControlScale)
 
    
     def loadFitSkeletons (self):   
@@ -211,8 +214,15 @@ class Puppet (QtGui.QMainWindow):
     def setJointRadius (self):
         value = float (self.ui.spinBox_jointRadius.value())        
         generic = openGeneric.Generic()        
-        generic.setJointRadius(value)          
+        generic.setJointRadius(value)
         
+        
+    def controlScale(self):          
+        value = self.ui.slider_controlScale.value()        
+        self.ui.button_controlScale.setText('{}%'.format(value))
+        
+    def resetControlScale(self):
+        self.ui.slider_controlScale.setValue(100)    
                     
     def build (self):        
 
@@ -224,12 +234,16 @@ class Puppet (QtGui.QMainWindow):
     
     
     def buildBiped(self):
+        
+        radius = float(self.ui.slider_controlScale.value())/100.00  
 
         generic = openGeneric.Generic()
               
         leftPelvis = generic.getJointFromLabel(1, 'Pelvis')
         leftKnee = generic.getJointFromLabel(1, 'Knee')
         leftAnkle = generic.getJointFromLabel(1, 'Ankle')   
+        leftPoleVector = generic.getJointFromLabel(1, 'LegPoleVector')   
+        
         
         if not leftPelvis or not leftKnee or not leftAnkle:
             warnings.warn ('leg fit skeleton is wrong.')            
@@ -238,9 +252,11 @@ class Puppet (QtGui.QMainWindow):
         #create left leg puppet        
         limb = createLimb.Limb( side=self.input._leftSide,
                                 type=self.input._leg,
-                                start={self.input._pelvis: leftPelvis},
-                                middle={self.input._knee: leftKnee},
-                                end={self.input._ankle: leftAnkle})        
+                                start={self.input._pelvis: leftPelvis[0]},
+                                middle={self.input._knee: leftKnee[0]},
+                                end={self.input._ankle: leftAnkle[0]},
+                                poleVector={self.input._legPoleVector: leftPoleVector[0]},
+                                radius=radius)        
         limb.create()
 
         

@@ -63,6 +63,12 @@ class Controls(object):
         if type=='AimCircle' :
             currentControl = pymel.mel.eval ('curve -d 1 -p 0 0.330576 0 -p 0.0376921 0.382454 0 -p 0.0892717 0.437381 0 -p 0.147329 0.48541 0 -p 0.210948 0.525784 0 -p 0.279125 0.557866 0 -p 0.350786 0.58115 0 -p 0.4248 0.595269 0 -p 0.5 0.6 0 -p 0.5752 0.595269 0 -p 0.649214 0.58115 0 -p 0.720875 0.557866 0 -p 0.789052 0.525784 0 -p 0.852671 0.48541 0 -p 0.910728 0.437381 0 -p 0.962308 0.382454 0 -p 1.006597 0.321496 0 -p 1.042896 0.255468 0 -p 1.070634 0.18541 0 -p 1.089372 0.112429 0 -p 1.098816 0.0376743 0 -p 1.098816 -0.0376743 0 -p 1.089372 -0.112429 0 -p 1.070634 -0.18541 0 -p 1.042896 -0.255468 0 -p 1.006597 -0.321496 0 -p 0.962308 -0.382454 0 -p 0.910728 -0.437381 0 -p 0.852671 -0.48541 0 -p 0.789052 -0.525784 0 -p 0.720875 -0.557866 0 -p 0.649214 -0.58115 0 -p 0.5752 -0.595269 0 -p 0.5 -0.6 0 -p 0.4248 -0.595269 0 -p 0.350786 -0.58115 0 -p 0.279125 -0.557866 0 -p 0.210948 -0.525784 0 -p 0.147329 -0.48541 0 -p 0.0892717 -0.437381 0 -p 0.0376921 -0.382454 0 -p 1.7524e-010 -0.330576 0 -p -0.0376921 -0.382454 0 -p -0.0892717 -0.437381 0 -p -0.147329 -0.48541 0 -p -0.210948 -0.525784 0 -p -0.279125 -0.557866 0 -p -0.350786 -0.58115 0 -p -0.4248 -0.595269 0 -p -0.5 -0.6 0 -p -0.5752 -0.595269 0 -p -0.649214 -0.58115 0 -p -0.720875 -0.557866 0 -p -0.789052 -0.525784 0 -p -0.852671 -0.48541 0 -p -0.910728 -0.437381 0 -p -0.962308 -0.382454 0 -p -1.006597 -0.321496 0 -p -1.042896 -0.255468 0 -p -1.070634 -0.18541 0 -p -1.089372 -0.112429 0 -p -1.098816 -0.0376743 0 -p -1.098816 0.0376743 0 -p -1.089372 0.112429 0 -p -1.070634 0.18541 0 -p -1.042896 0.255468 0 -p -1.006597 0.321496 0 -p -0.962308 0.382454 0 -p -0.910728 0.437381 0 -p -0.852671 0.48541 0 -p -0.789052 0.525784 0 -p -0.720875 0.557866 0 -p -0.649214 0.58115 0 -p -0.5752 0.595269 0 -p -0.5 0.6 0 -p -0.4248 0.595269 0 -p -0.350786 0.58115 0 -p -0.279125 0.557866 0 -p -0.210948 0.525784 0 -p -0.147329 0.48541 0 -p -0.0892717 0.437381 0 -p -0.0376921 0.382454 0 -p 0 0.330576 0 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 -k 8 -k 9 -k 10 -k 11 -k 12 -k 13 -k 14 -k 15 -k 16 -k 17 -k 18 -k 19 -k 20 -k 21 -k 22 -k 23 -k 24 -k 25 -k 26 -k 27 -k 28 -k 29 -k 30 -k 31 -k 32 -k 33 -k 34 -k 35 -k 36 -k 37 -k 38 -k 39 -k 40 -k 41 -k 42 -k 43 -k 44 -k 45 -k 46 -k 47 -k 48 -k 49 -k 50 -k 51 -k 52 -k 53 -k 54 -k 55 -k 56 -k 57 -k 58 -k 59 -k 60 -k 61 -k 62 -k 63 -k 64 -k 65 -k 66 -k 67 -k 68 -k 69 -k 70 -k 71 -k 72 -k 73 -k 74 -k 75 -k 76 -k 77 -k 78 -k 79 -k 80 -k 81 -k 82 ;')
     
+        if type=='Arrow':            
+            currentControl = pymel.mel.eval ('curve -d 1 -p 0 0 1 -p 1 0 0 -p 0 0 0 -p 0 1 0 -p 0 0 1 -p -1 0 0 -p 0 0 0 -p 0 -1 0 -p 0 0 1 -p 0 0 0 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 -k 8 -k 9 ;')
+
+        if type=='LongCube':            
+            currentControl = pymel.mel.eval ('curve -d 1 -p -1 2.5 -1 -p -1 2.5 1 -p -1 0 1 -p 1 0 1 -p 1 2.5 1 -p 1 2.5 -1 -p 1 0 -1 -p -1 0 -1 -p -1 2.5 -1 -p 1 2.5 -1 -p 1 0 -1 -p 1 0 1 -p 1 2.5 1 -p -1 2.5 1 -p -1 0 1 -p -1 0 -1 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 -k 8 -k 9 -k 10 -k 11 -k 12 -k 13 -k 14 -k 15 ;')
+                
         if type=='IKFK' :
             ikIControl = pymel.mel.eval ('curve -d 1 -p -3.064299 0 2.088051 -p -2.822937 0 2.088051 -p -2.822937 0 3.911949 -p -3.064299 0 3.911949 -p -3.064299 0 2.088051 -k 0 -k 1 -k 2 -k 3 -k 4 ;')
             ikKControl = pymel.mel.eval ('curve -d 1 -p -2.407397 0 2.088051 -p -2.407397 0 3.911949 -p -2.166035 0 3.911949 -p -2.166035 0 3.27993 -p -1.867443 0 2.988803 -p -1.218006 0 3.911949 -p -0.899508 0 3.911949 -p -1.698241 0 2.827066 -p -0.9331 0 2.088051 -p -1.260306 0 2.088051 -p -2.166035 0 2.992535 -p -2.166035 0 2.088051 -p -2.407397 0 2.088051 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 -k 8 -k 9 -k 10 -k 11 -k 12 ;')
@@ -79,12 +85,11 @@ class Controls(object):
 
         generic = openGeneric.Generic()
         
-        #controlName = generic.getNameStyle ([side, name, self.input._control]) 
-        controlName = name        
-        nullGroup = generic.getNameStyle ([side, name, self.input._null])
-        offsetGroup = generic.getNameStyle ([side, name, self.input._offset])
-        group = generic.getNameStyle ([side, name, self.input._group])
-
+        controlName = generic.getNameStyle ([side, name, self.input._control]) 
+        nullGroup = generic.getNameStyle ([side, name, '{}_{}'.format(self.input._control, self.input._null)])
+        offsetGroup = generic.getNameStyle ([side, name, '{}_{}'.format(self.input._control, self.input._offset)])
+        group = generic.getNameStyle ([side, name, '{}_{}'.format(self.input._control, self.input._group)])
+        
         for eachNode in [nullGroup, controlName, offsetGroup, group]:
             if not pymel.objExists(str(eachNode)):
                 continue   
@@ -95,8 +100,14 @@ class Controls(object):
 
         nullGroup = pymel.group (em=1, n=nullGroup)            
         offsetGroup = pymel.group (em=1, n=offsetGroup)
-        group = pymel.group (em=1, n=group)        
-        currentControl = currentControl.rename(controlName)               
+        group = pymel.group (em=1, n=group) 
+        
+        currentControl = pymel.PyNode(currentControl)       
+        currentControl = currentControl.rename(controlName)
+        
+        currentControl.setRotation(orientation)
+        currentControl.setScale([radius, radius, radius])
+        pymel.makeIdentity(currentControl, a=1, t=0, r=1, s=1, n=0)      
         
         currentControl.setParent(offsetGroup)
         offsetGroup.setParent(group)

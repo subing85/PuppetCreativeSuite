@@ -36,7 +36,8 @@ class Names (object) :
         self._pelvis = 'Pelvis'
         self._knee = 'Knee'
         self._ankle = 'Ankle'
-        self._legPoleVector = 'LegPoleVector'
+        #self._legPoleVector = 'LegPoleVector'
+        self._legPoleVector = 'Knee'
         
         self._foot = 'Foot'         
         self._ball = 'Ball'
