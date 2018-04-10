@@ -267,18 +267,48 @@ class Generic (object):
         node.setParent(group)
         
         return group
-        
-        
+  
             
-            
-            
+    def createDistanceDimension (self, side, name, startPoint, endPoint):
 
-
-
+        tempUpDistanceDimShape = pymel.distanceDimension(sp=(0, 0, 0), ep=(0, 1, 0))
+        tempUpStarLocator = pymel.listConnections(tempUpDistanceDimShape + '.startPoint', d=0, s=1)
+        tempUpEndLocator = pymel.listConnections(tempUpDistanceDimShape + '.endPoint', d=0, s=1)
+        tempUpDistanceDim = pymel.listRelatives(tempUpDistanceDimShape, p=1)
         
-
+        starLocator = self.getNameStyle([side, name, 'Start_{}'.format (self.input._locator)])
+        endLocator = self.getNameStyle([side, name, 'End_{}'.format (self.input._locator)])
+        distanceDim = self.getNameStyle([side, name, self.input._distanceBetween])
+        
+        for eachNode in [starLocator, endLocator, distanceDim]:
+            if pymel.objExists(eachNode):
+                pymel.delete(eachNode)
+        
+        starLocator = tempUpStarLocator[0].rename(starLocator)
+        endLocator = tempUpEndLocator[0].rename(endLocator)
+        distanceDim = tempUpDistanceDim[0].rename(distanceDim)
+        
+        startPointConstraint = self.getNameStyle([side, name, 'Start_{}_{}'.format(self.input._locator, self.input._pointConstraint)])
+        endPointConstraint = self.getNameStyle([side, name, 'Start_{}_{}'.format(self.input._locator, self.input._pointConstraint)])
+        
+        pymel.pointConstraint(startPoint, starLocator,  o=[0,0,0], w=1, n=startPointConstraint)
+        pymel.pointConstraint(endPoint, endLocator,  o=[0,0,0], w=1, n=endPointConstraint)   
+            
+        distanceDimShape = pymel.listRelatives(distanceDim, s=1)
+        pymel.select(cl=1)
+        return [starLocator, endLocator, distanceDim, distanceDimShape[0]]
+    
+    def removeExistsNode(self, nodes):
+        
+        for eachNode in nodes:        
+            if pymel.objExists(eachNode):
+                try :
+                    pymel.delete(eachNode)
+                except :
+                    pass
+                
+                
 '''
-
 def setJointLabel (joint, label, side, switch):
     cmds.setAttr (joint + '.side', side)
     cmds.setAttr (joint + '.type', 18)

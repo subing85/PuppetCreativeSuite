@@ -192,8 +192,7 @@ class Limb(object):
              
             pymel.parentConstraint(shapeFk, fkJoints[index], w=1)            
             fkControls.append([nullFk, shapeFk, offsetFk, groupFk])            
-            groupFk.setParent(fkControlGroup)
-                     
+            groupFk.setParent(fkControlGroup)                     
              
         #IK Controls
         ikHandle = generic.getNameStyle([self.side, types[index], self.input._ikHandle])
@@ -238,14 +237,29 @@ class Limb(object):
         reverse = pymel.shadingNode ('reverse',  asUtility=1, n=reverse)        
         jointGroup.connectAttr(self.input._ikfkBlend, '{}.inputX'.format(reverse))
         jointGroup.connectAttr(self.input._ikfkBlend, '{}.visibility'.format(fkControlGroup))
-        reverse.connectAttr('outputX', '{}.visibility'.format(ikControlGroup))
+        reverse.connectAttr('outputX', '{}.visibility'.format(ikControlGroup))        
         
+        #Ik Strech        
+        from package import createIKStrech
+        #reload(createIKStrech)
+        strechGroup = createIKStrech.ikStrech(self.side, self.type, ikJoints, ikHandle[0], nullKneeIk, 'translateX', 1)
         
-        #Strech
-              
-
-
-         
+        #Connection to control
+        shapeAnkleIK.addAttr('switchStretch', at='double', min=0, max=1, dv=0, k=1)
+        shapeAnkleIK.addAttr('lengthStrech', at='double', min=1, max=100, dv=10, k=1)
+        shapeAnkleIK.addAttr('upperStretch', at='double', min=-50, max=50, dv=0, k=1)
+        shapeAnkleIK.addAttr('lowerStretch', at='double', min=0, max=1, dv=0, k=1)
+        shapeAnkleIK.addAttr('stretch', at='double', min=-180, max=180, dv=0, k=1)
+        shapeKneeIk.addAttr('kneeLock', at='double', min=0, max=1, dv=0, k=1)
+        
+        shapeAnkleIK.connectAttr('switchStretch', '{}.switchStretch'.format(strechGroup), f=True)
+        shapeAnkleIK.connectAttr('lengthStrech', '{}.lengthStrech'.format(strechGroup), f=True)
+        shapeAnkleIK.connectAttr('upperStretch', '{}.upperStretch'.format(strechGroup), f=True)
+        shapeAnkleIK.connectAttr('lowerStretch', '{}.lowerStretch'.format(strechGroup), f=True)
+        shapeAnkleIK.connectAttr('stretch', '{}.stretch'.format(strechGroup), f=True)
+        shapeKneeIk.connectAttr('kneeLock', '{}.kneeLock'.format(strechGroup), f=True)
+      
+        #Twist setup         
           
         pymel.undoInfo(closeChunk=1)         
         
