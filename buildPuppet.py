@@ -239,10 +239,10 @@ class Puppet (QtGui.QMainWindow):
 
         generic = openGeneric.Generic()
               
-        leftPelvis = generic.getJointFromLabel(1, 'Pelvis')
-        leftKnee = generic.getJointFromLabel(1, 'Knee')
-        leftAnkle = generic.getJointFromLabel(1, 'Ankle')   
-        leftPoleVector = generic.getJointFromLabel(1, 'LegPoleVector')   
+        leftPelvis = generic.getJointFromLabel(1, 'Pelvis', False)
+        leftKnee = generic.getJointFromLabel(1, 'Knee', False)
+        leftAnkle = generic.getJointFromLabel(1, 'Ankle', False)   
+        leftPoleVector = generic.getJointFromLabel(1, 'LegPoleVector', False)   
         
         
         if not leftPelvis or not leftKnee or not leftAnkle:

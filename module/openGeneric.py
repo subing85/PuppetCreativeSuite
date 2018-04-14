@@ -137,6 +137,10 @@ class Generic (object):
             if not childJoints:
                 continue
             
+            side = eachJoint.getAttr('side')
+            type = eachJoint.getAttr('type')
+            otherType = eachJoint.getAttr('otherType')            
+            
             #start_xyz = eachJoint.getTranslation (p=True)
             #end_xyz = childJoints[0].getTranslation (p=True)            
             start_xyz = pymel.xform (eachJoint, q=1, a=1, ws=1, t=1)
@@ -148,16 +152,21 @@ class Generic (object):
             
             #pymel.select (eachJoint, r=1)
             splitJoints = [eachJoint]
-            for jntLoop in range (1, jointCount, 1) :
-                midPointX = start_xyz[0] + (jntLoop*jointVectorX)
-                midPointY = start_xyz[1] + (jntLoop*jointVectorY)
-                midPointZ = start_xyz[2] + (jntLoop*jointVectorZ)
+            for index in range (1, jointCount, 1) :
+                midPointX = start_xyz[0] + (index*jointVectorX)
+                midPointY = start_xyz[1] + (index*jointVectorY)
+                midPointZ = start_xyz[2] + (index*jointVectorZ)
                 
                 pymel.select (cl=True)
-                twistJoint = pymel.joint (rad=jointRadius, o=(0,0,0), p=(midPointX, midPointY, midPointZ), n='{}_{}'.format (eachJoint, jntLoop))                         
+                twistJoint = pymel.joint (rad=jointRadius, o=(0,0,0), p=(midPointX, midPointY, midPointZ), n='{}_{}'.format (eachJoint, index))                         
                 twistJoint.setParent (splitJoints[-1])                 
                 twistJoint.setAttr('jointOrient', 0, 0, 0)      
-                twistJoint.setAttr('rotate', 0, 0, 0)                                
+                twistJoint.setAttr('rotate', 0, 0, 0) 
+                
+                twistJoint.setAttr('side', side)
+                twistJoint.setAttr('type', type)
+                twistJoint.setAttr('otherType', '{}_Twist_{}'.format(otherType, index)) 
+                
                 splitJoints.append (twistJoint)
                
             childJoints[0].setParent (splitJoints[-1])              
@@ -181,13 +190,13 @@ class Generic (object):
         pymel.undoInfo(closeChunk=1)
         
     
-    def getJointFromLabel(self, side, lable):
+    def getJointFromLabel(self, side, lable, find):
         
         joints = pymel.ls(type='joint')        
         if not joints :
             warnings.warn ('Joints are not exists in the scene.')
             
-        labelJoint = []
+        labelJoints = []
         
         for eachJoint in joints :
             if not self.jointHasValid (eachJoint):
@@ -199,16 +208,21 @@ class Generic (object):
             if currentSide!=side:
                 continue
             
-            if currentLabel!=lable:
-                continue
-                        
-            labelJoint.append(eachJoint)
-            
-        if len(labelJoint)>1:
-            warnings.warn ('more than one joint exists as a same label.')            
-            return None
-            
-        return labelJoint
+            if find:  
+                if lable in currentLabel:
+                    #continue
+                    labelJoints.append(eachJoint)                        
+            else:                    
+                if currentLabel!=lable:
+                    continue                    
+                labelJoints.append(eachJoint)
+
+        if not find:
+            if len(labelJoints)>1:
+                warnings.warn ('more than one joint exists as a same label.')            
+                return None
+                   
+        return labelJoints
 
 
     def createJoint(self, radius=None, name=None, position=None): 
@@ -298,6 +312,7 @@ class Generic (object):
         pymel.select(cl=1)
         return [starLocator, endLocator, distanceDim, distanceDimShape[0]]
     
+    
     def removeExistsNode(self, nodes):
         
         for eachNode in nodes:        
@@ -307,6 +322,23 @@ class Generic (object):
                 except :
                     pass
                 
+    def lockHideAttributes (self, node, type, attributes):
+        for eachAttribute in attributes:
+            if type=='lock':                
+                node.setAttr(eachAttribute, lock=True)
+            if type=='hide':
+                node.setAttr(eachAttribute, keyable=False, channelBox=False)
+            if type=='nonkeyable':                
+                node.setAttr(eachAttribute, keyable=False, channelBox=True)
+            if type=='lockHide':                
+                node.setAttr(eachAttribute, lock=True, keyable=False, channelBox=False)
+          
+    
+    def padding (self, shot=0, pShot=0):
+        shotSize = len(str(shot))
+        zero = pShot-shotSize
+        zero = (abs(zero)*"0")
+        return zero    
                 
 '''
 def setJointLabel (joint, label, side, switch):
@@ -316,17 +348,7 @@ def setJointLabel (joint, label, side, switch):
     cmds.setAttr (joint + '.drawLabel', switch)
     
     
-def lockHideAttributes (node, type, attributes):
-    for attribute in attributes :
-        if type=='lock' :
-            cmds.setAttr (node + '.' + attribute, lock=1)
-        if type=='hide' :
-            cmds.setAttr (node + '.' + attribute, keyable=0, channelBox=0)
-        if type=='nonkeyable' :
-            cmds.setAttr (node + '.' + attribute, keyable=0, channelBox=1)
-        if type=='lockHide' :
-            cmds.setAttr (node + '.' + attribute,lock=1, keyable=0, channelBox=0)
-  
+
   
 hierarchyAppend    = []      
 def hierarchyList (root) :
@@ -396,11 +418,7 @@ def listJointSide (joint) :
         sideName        = 'right'
     return [side, sideName]
 
-def padding (shot=0, pShot=0):
-    shotSize        = len(str(shot))
-    zero            = pShot - shotSize
-    zero            = (abs(zero)*"0")
-    return zero
+
 
 def setColorChange (nodes, rgbColor) :           
     if nodes :       

@@ -94,6 +94,8 @@ class Limb(object):
         pymel.undoInfo(openChunk=1) 
         generic = openGeneric.Generic()
         
+        generic = openGeneric.Generic()
+        
         #Create deformer joint        
         pevlis_dk = generic.getNameStyle ([self.side, self.startType, self.input._dk])
         knee_dk = generic.getNameStyle ([self.side, self.middleType, self.input._dk])
@@ -136,7 +138,7 @@ class Limb(object):
          
         jointGroup = generic.getNameStyle ([self.side, self.type, '{}_{}'.format (self.input._joint, self.input._group)])
         jointGroup = generic.createGroup(None, jointGroup)
- 
+        
         pevlis_ikGgroup.setParent (jointGroup)
         pevlis_fkGroup.setParent (jointGroup)
         pevlis_dkGroup.setParent (jointGroup)
@@ -176,7 +178,7 @@ class Limb(object):
             
         ikControlGroup.setParent(controlGroup)
         fkControlGroup.setParent(controlGroup)
-
+        
         #FK Controls        
         fkControls = []
         for index in range (len(fkJoints)):
@@ -227,7 +229,7 @@ class Limb(object):
         nullPelvisIK, shapePelvisIK, offsetPelvisIK, groupPelvisIK = self.control.create(type='LongCube', name='{}_{}'.format(self.startType, self.input._ik), side=self.side, radius=self.radius/1.5, orientation=[0,0,-90], positionNode=pevlis_ik)    
         constraint = generic.getNameStyle ([self.side, self.startType, '{}_{}_{}'.format(self.input._ikHandle, self.input._group, self.input._poleVectorConstraint)])
         pymel.parentConstraint (nullPelvisIK, pevlis_ik, w=1, n=constraint) 
-
+        
         groupAnkleIK.setParent (ikControlGroup)
         groupKneeIk.setParent (ikControlGroup)
         groupPelvisIK.setParent (ikControlGroup)
@@ -240,10 +242,12 @@ class Limb(object):
         reverse.connectAttr('outputX', '{}.visibility'.format(ikControlGroup))        
         
         #Ik Strech        
-        from package import createIKStrech
-        #reload(createIKStrech)
-        strechGroup = createIKStrech.ikStrech(self.side, self.type, ikJoints, ikHandle[0], nullKneeIk, 'translateX', 1)
-        
+        from package import createIKStretch
+        #reload(createIKStretch)
+        strechGroup = createIKStretch.iKStretch(self.side, self.type, ikJoints, ikHandle[0], nullKneeIk, 'translateX', 1)
+        strechGroup.setParent (jointGroup)    
+              
+       
         #Connection to control
         shapeAnkleIK.addAttr('switchStretch', at='double', min=0, max=1, dv=0, k=1)
         shapeAnkleIK.addAttr('lengthStrech', at='double', min=1, max=100, dv=10, k=1)
@@ -258,9 +262,35 @@ class Limb(object):
         shapeAnkleIK.connectAttr('lowerStretch', '{}.lowerStretch'.format(strechGroup), f=True)
         shapeAnkleIK.connectAttr('stretch', '{}.stretch'.format(strechGroup), f=True)
         shapeKneeIk.connectAttr('kneeLock', '{}.kneeLock'.format(strechGroup), f=True)
-      
-        #Twist setup         
-          
+        
+        #Twist setup                
+        startLable = self.start.getAttr('otherType')
+        middleLable = self.middle.getAttr('otherType')         
+       
+        upperTwistJoints = generic.getJointFromLabel(1, startLable, True)
+        lowerTwistJoints = generic.getJointFromLabel(1, middleLable, True)
+        
+        #print 'upperTwistJoints\t', upperTwistJoints
+        #print 'lowerTwistJoints\t', lowerTwistJoints
+              
+        from package import createTwist
+        reload(createTwist)
+        twistGroup = createTwist.twist(self.side, self.type, upperTwistJoints, lowerTwistJoints, dkJoints, 'rotateX', self.radius, [90,0,0])
+        #twist(controlScale, type, side, sideName, upperJoints, lowerJoints, blendJoints)
+                  
+        twistGroup.setParent (controlGroup)
+        
+        
+        
+        
+        
+        pymel.select(cl=True)       
+                  
+                  
+                  
+                  
+                  
+                  
         pymel.undoInfo(closeChunk=1)         
         
 

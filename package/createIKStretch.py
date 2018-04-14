@@ -13,9 +13,9 @@ Description
     Module for ik strech
  
 example   
-from package import createIKStrech
-reload(createIKStrech)
-createIKStrech.ikStrech()   
+from package import createIKStretch
+#reload(createIKStretch)
+strechGroup = createIKStretch.iKStretch(self.side, self.type, ikJoints, ikHandle[0], nullKneeIk, 'translateX', 1) 
 '''
 
 from module import openGeneric
@@ -28,7 +28,7 @@ reload(openControls)
 
 from pymel import core as pymel
 
-def ikStrech (side, type, ikJoints, ikHandle, poleVector, strechAxis, value):
+def iKStretch (side, type, ikJoints, ikHandle, poleVector, strechAxis, value):
     
     #pymel.undoInfo(openChunk=1)      
     generic = openGeneric.Generic()     
@@ -77,8 +77,23 @@ def ikStrech (side, type, ikJoints, ikHandle, poleVector, strechAxis, value):
     strechOffset_mdn = generic.getNameStyle ([side, type, 'Strech_Offset_{}'.format (input._multiplyDivide)])
     kneeStrechOffset_mdn = generic.getNameStyle ([side, type, 'KneeStrech_Offset_{}'.format (input._multiplyDivide)])
     
-    generic.removeExistsNode([upperStrech_blendColor, lowerStrech_blendColor, strech_mdn, strech_cp, strech_pma, lowerStrech_pma])   
-       
+    generic.removeExistsNode([  upperStrech_blendColor,
+                                lowerStrech_blendColor,
+                                strech_mdn,
+                                strech_cp,
+                                scaleStrech_mdn,
+                                strech_pma,
+                                lowerStrech_pma,
+                                upperStrech_pma,
+                                offestStrech_mdn,
+                                switchStrech_pma,
+                                switchStrech_mdn,
+                                autoSwitchStrech_mdn,
+                                sacleDistSwitchStrech_mdn,
+                                kneeStrech_mdn,
+                                strechOffset_mdn,
+                                kneeStrechOffset_mdn])
+                                   
     upperStrech_blendColor = pymel.shadingNode ('blendColors', asUtility=1, n=upperStrech_blendColor)    
     lowerStrech_blendColor = pymel.shadingNode ('blendColors', asUtility=1, n=lowerStrech_blendColor)    
     strech_mdn = pymel.shadingNode ('multiplyDivide', asUtility=1, n=strech_mdn)
