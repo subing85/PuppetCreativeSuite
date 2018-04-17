@@ -63,9 +63,10 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
     generic.lockHideAttributes (shapeLowerTwist, 'lockHide', channelAttributes)
     
     #Twist control attributes
-    twistControlGroup.addAttr('upperTwist', at='double', dv=0, k=1)
-    twistControlGroup.addAttr('middleTwist', at='double', dv=0, k=1)
-    twistControlGroup.addAttr('lowerTwist', at='double', dv=0, k=1)
+    twistAttribute = ['upperTwist', 'middleTwist', 'lowerTwist']   
+    twistControlGroup.addAttr(twistAttribute[0], at='double', dv=0, k=1)
+    twistControlGroup.addAttr(twistAttribute[2], at='double', dv=0, k=1)
+    twistControlGroup.addAttr(twistAttribute[1], at='double', dv=0, k=1)
         
     twistControlGroup.addAttr('middleTwistPosition', at='double', dv=0, k=1)
     twistControlGroup.addAttr('upperTwistFallOff', at='double', dv=0, k=1)
@@ -105,6 +106,7 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
     dnJoints = [dkJoints[1], dkJoints[2]]    
     twistType = ['UpperTwist', 'LowerTwist']
     twistJoints = [upperTwistJoints, lowerTwistJoints]    
+    twistCurves = []
         
     twistDeformGroup = generic.getNameStyle ([side, type, 'Twist_{}'.format (input._group)])            
     twistDeformGroup = generic.createGroup(None, twistDeformGroup)     
@@ -120,6 +122,7 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
         twistCurve = tempTwistCurve.rename(twistCurve)        
         twistCurveShape = twistCurve.getShape()        
         twistCurve.setAttr('visibility', 0, l=True)
+        twistCurves.append(twistCurve)
         
         twistLength = len(twistJoints[index])
         twistIng = 1.00/float(twistLength)        
@@ -184,9 +187,7 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
             #Replace scale            
             globalScaleGroup.connectAttr('scaleX', '{}.scaleX'.format(twistLocator))
             globalScaleGroup.connectAttr('scaleY', '{}.scaleY'.format(twistLocator))
-            globalScaleGroup.connectAttr('scaleZ', '{}.scaleZ'.format(twistLocator))
-            
-            
+            globalScaleGroup.connectAttr('scaleZ', '{}.scaleZ'.format(twistLocator))            
 
             if twistIntex>0: #Aim Constrain
                 constraintPaddingSize = '{}{}'.format (generic.padding (twistIntex+1, 2), twistIntex)    
@@ -197,7 +198,8 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
                                     aim=[1, 0, 0], 
                                     u=[0, 1, 0], 
                                     wut='objectrotation',
-                                    wu=[0,1,0], wuo=objectUpLocator, 
+                                    wu=[0,1,0], 
+                                    wuo=objectUpLocator, 
                                     n=aimConstraint
                                     )
             
@@ -228,63 +230,74 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
             twistControlGroup.connectAttr(eachTwistAttribute, '{}.blender'.format(twistBlendColor), f=True)
             shapeMiddleTwist.connectAttr(eachTwistAttribute, '{}.{}'.format(twistControlGroup, eachTwistAttribute), f=True)
 
-
             twistPose+=twistIng
        
-#===============================================================================
-#     twistBindJoints = []
-#     twistControls = [upperTwistControl[0], middleTwistControl[0], lowerTwistControl[0]]       
-#     twistAttribute = [type + 'UpperTwist', type + 'MiddleTwist', type + 'LowerTwist']
-#     limbJoints = [upperJoints[0], lowerJoints[0], lowerJoints[-1]]
-# 
-#     twistLockLocator = cmds.spaceLocator (p=[0, 0, 0], n=side + '_' + type + '_Twist_' + gv.locator)
-#     twistLockLocGroup = cmds.group (em=1, n=side + '_' + type + '_Twist_' + gv.locator + '_' + gv.group)
-#===============================================================================
-           
-       
-       
-    '''  
+    twistLockLocator = generic.getNameStyle ([side, type, 'Twist_{}'.format (input._locator)])    
+    generic.removeExistsNode([twistLockLocator])               
+    twistLockLocator = pymel.spaceLocator (p=[0, 0, 0], n=twistLockLocator)
 
-
-    cmds.parent (twistLockLocator[0], twistLockLocGroup)
-    generic.locatorSacle (twistLockLocator, 0.1, 1)
-    generic.snapAction (blendJoints[0], twistLockLocGroup)
-    cmds.parent (twistLockLocGroup, twistLocatorGroup)       
-
-    cmds.select (cl=1)
+    twistLockLocatorGroup = generic.getNameStyle ([side, type, 'Twist_{}_{}'.format(input._locator, input._group)])    
+    generic.removeExistsNode([twistLockLocatorGroup])       
+    twistLockLocatorGroup = generic.createGroup(None, twistLockLocatorGroup)    
+    twistLockLocator.setParent(twistLockLocatorGroup)
     
-    for twistBindLoop in range (0, 3, 1) : 
-        cmds.select (cl=1)
-        twistBindJoint              = cmds.joint (rad=gv.jntRadius, n=side + '_' + type + '_' + twistCtrlType[twistBindLoop] + 'Twist_' + gv.joint)
-        twistBindJointGroup         = cmds.group (em=1, n=side + '_' + type + '_' + twistCtrlType[twistBindLoop] + 'Twist_' + gv.joint + '_' + gv.group)
-
-        cmds.parent (twistBindJoint, twistBindJointGroup)           
+    generic.snap(dkJoints[0], twistLockLocatorGroup) 
+    twistLockLocatorGroup.setParent(twistDeformGroup)
     
-        generic.snapAction (limbJoints[twistBindLoop], twistBindJointGroup)   
-        cmds.makeIdentity (twistBindJoint, a=1, t=0, r=1, s=0, n=0)
-        twistBindJoints.append (twistBindJoint)           
-        cmds.parent (twistBindJointGroup, twistLocatorGroup)            
-        cmds.select (cl=1)
-
-        twistParentConst            = cmds.parentConstraint (twistControls[twistBindLoop], twistBindJointGroup, w=1, n=twistBindJointGroup + '_' + gv.parentConstraint)
-        twistScaleConst             = cmds.scaleConstraint (twistControls[twistBindLoop], twistBindJointGroup, o=[1,1,1], w=1, n=twistBindJointGroup + '_' + gv.scaleConstraint)
-
-        twistLocator                = cmds.spaceLocator (p=[0, 0, 0], n=side + '_' + type + '_' + twistCtrlType[twistBindLoop] + 'Twist_' + gv.locator)
-        twistLocGroup               = cmds.group (em=1, n=side + '_' + type + '_' + twistCtrlType[twistBindLoop] + 'Twist_' + gv.locator + '_' + gv.group)
-
-        cmds.parent (twistLocator[0], twistLocGroup)
-        generic.locatorSacle (twistLocator, 0.1, 0)
-        generic.snapAction (limbJoints[twistBindLoop], twistLocGroup)
-        cmds.parent (twistLocGroup, twistLocatorGroup)
-
-        twistLocConst               = cmds.parentConstraint (twistControls[twistBindLoop], twistLocator[0], w=1, n=twistLocator[0] + '_' + gv.parentConstraint)
-
-        #Connect to configure node
-        cmds.connectAttr (twistLocator[0] + '.rotateX', configure + '.' + sideName + twistAttribute[twistBindLoop], f=1)
+    twistBindJoints = []
+    twistControls = [shapeUpperTwist, shapeMiddleTwist, shapeLowerTwist]       
+    limbJoints = [upperTwistJoints[0], lowerTwistJoints[0], lowerTwistJoints[-1]]     
+    #twistAttribute = ['{}UpperTwist'.format(type), '{}MiddleTwist'.format(type),  '{}LowerTwist'.format(type)]        
+    twistCtrlType = ['Upper', 'Middle', 'Lower']
     
-    cmds.skinCluster (twistBindJoints, twistCurves[0], tsb=True, mi=1, dr=4.0, rui=0, normalizeWeights=1, obeyMaxInfluences=True, n=twistCurves[0] + '_SkinClu')
-    cmds.skinCluster (twistBindJoints, twistCurves[1], tsb=True, mi=1, dr=4.0, rui=0, normalizeWeights=1, obeyMaxInfluences=True, n=twistCurves[1] + '_SkinClu')
+    for bindIndex in range (3):
+        pymel.select (cl=1)    
+        
+        twistBindJointGroup = generic.getNameStyle ([side, type, '{}_Twist_{}_{}'.format (twistCtrlType[bindIndex], input._joint, input._group)])         
+        generic.removeExistsNode([twistBindJointGroup])       
+        twistBindJointGroup = generic.createGroup(None, twistBindJointGroup)    
+        twistBindJointGroup.setParent(twistDeformGroup)                       
+            
+        twistBindJoint = generic.getNameStyle ([side, type, '{}_Twist_{}'.format (twistCtrlType[bindIndex], input._joint)]) 
+        generic.removeExistsNode([twistBindJoint]) 
+        twistJoint = pymel.joint (rad=input._jointRadius, n=twistBindJoint)        
+        twistJoint.setParent(twistBindJointGroup)
+        twistBindJoints.append (twistBindJoint)             
+        generic.snap(limbJoints[bindIndex], twistBindJointGroup) 
+        
+        pymel.makeIdentity (twistBindJoint, a=1, t=0, r=1, s=0, n=0)        
+        
+        parentConstraint = generic.getNameStyle ([side, type, '{}_Twist_{}_{}_{}'.format (twistCtrlType[bindIndex], input._joint, input._group, input._parentConstraint)])         
+        scaleConstraint = generic.getNameStyle ([side, type, '{}_Twist_{}_{}_{}'.format (twistCtrlType[bindIndex], input._joint, input._group, input._scaleConstraint)])         
+        generic.removeExistsNode([parentConstraint, scaleConstraint]) 
+        pymel.parentConstraint (twistControls[bindIndex], twistBindJointGroup, w=1, n=parentConstraint)
+        pymel.scaleConstraint (twistControls[bindIndex], twistBindJointGroup, o=[1,1,1], w=1, n=scaleConstraint)
 
+        twistLocGroup = generic.getNameStyle ([side, type, '{}_Twist_{}_{}'.format(twistCtrlType[bindIndex], input._locator, input._group)])    
+        generic.removeExistsNode([twistLocGroup])       
+        twistLocGroup = generic.createGroup(None, twistLocGroup)    
+
+        twistLocator = generic.getNameStyle ([side, type, '{}_Twist_{}'.format(twistCtrlType[bindIndex], input._locator)])    
+        generic.removeExistsNode([twistLocator])               
+        twistLocator = pymel.spaceLocator (p=[0, 0, 0], n=twistLocator)
+        twistLocator.setParent(twistLocGroup)    
+        ##generic.snap(limbJoints[bindIndex], twistLocGroup) 
+        generic.snap(twistControls[bindIndex], twistLocGroup)        
+
+        twistLocConst = generic.getNameStyle ([side, type, '{}_Twist_{}_{}'.format(twistCtrlType[bindIndex], input._locator, input._parentConstraint)])         
+        pymel.parentConstraint (twistControls[bindIndex], twistLocator, w=1, n=twistLocConst)
+        
+        twistLocator.connectAttr('rotateX', '{}.{}'.format(twistControlGroup, twistAttribute[bindIndex]), f=True)
+        
+    upperCurveskincluster = generic.getNameStyle ([side, type, '{}_{}_{}'.format (twistType[0], input._curve, input._skinCluster)])
+    generic.removeExistsNode([upperCurveskincluster])   
+    pymel.skinCluster(twistBindJoints, twistCurves[0], tsb=True, mi=1, dr=4.0, rui=0, normalizeWeights=1, obeyMaxInfluences=True, n=upperCurveskincluster)
+    
+    lowerCurveskincluster = generic.getNameStyle ([side, type, '{}_{}_{}'.format (twistType[1], input._curve, input._skinCluster)])
+    generic.removeExistsNode([lowerCurveskincluster])     
+    pymel.skinCluster(twistBindJoints, twistCurves[1], tsb=True, mi=1, dr=4.0, rui=0, normalizeWeights=1, obeyMaxInfluences=True, n=lowerCurveskincluster)
+              
+    ''' 
     kneeParentConst                 = cmds.parentConstraint (middleKneeControl[0], middleTwistControl[3], w=1, n=middleTwistControl[3] + '_' + gv.parentConstraint)
     kneeScaleConst                  = cmds.scaleConstraint (middleKneeControl[0], middleTwistControl[3], o=[1,1,1], w=1, n=middleTwistControl[3] + '_' + gv.scaleConstraint)                           
 
@@ -357,157 +370,7 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
     pymel.undoInfo(closeChunk=1)
     return twistControlGroup
    
-    
-'''
-def twistSetup (controlScale, configure, type, side, sideName, upperJoints, lowerJoints, blendJoints):
-    
-    
-    cmds.undoInfo(openChunk=1)        
 
-
-
-    cmds.parent (upperTwistControl[3], twistControlGroup)        
-    cmds.parent (middleTwistControl[3], twistControlGroup)        
-    cmds.parent (lowerTwistControl[3], twistControlGroup)                        
-    cmds.parent (middleKneeControl[3], twistControlGroup)       
-
-    twistJoints = []
-    
-        for tJntLoop in range (0, len(twistJoints[twistLoop]), 1) :
-            paddingSize         = str (generic.padding (tJntLoop+1, 2)) + str(tJntLoop + 1)
-            jointRotateOrder    = cmds.getAttr (twistJoints[twistLoop][tJntLoop] + '.rotateOrder')
-            eachTwistJoint      = cmds.joint (rad=gv.jntRadius, n=side + '_' + type + '_' + twistType[twistLoop] + 'Twist_' + paddingSize + '_' + gv.joint)
-            eachTwistLocator    = cmds.spaceLocator (p=[0, 0, 0], n=side + '_' + type + '_' + twistType[twistLoop] + 'Twist_' + paddingSize + '_' + gv.locator)
-            cmds.setAttr (eachTwistJoint + '.rotateOrder', jointRotateOrder)
-
-            generic.locatorSacle (eachTwistLocator, 0.1, 1)
-            twistLocators.append (eachTwistLocator[0])
-            cmds.parent (eachTwistJoint, eachTwistLocator[0])
-            
-            generic.snapAction (twistJoints[twistLoop][tJntLoop], eachTwistLocator[0])       
-            cmds.makeIdentity (eachTwistJoint, a=1, t=0, r=1, s=0, n=0)
-            cmds.select (cl=1)
-
-            pointOnCrInfo       = cmds.createNode ('pointOnCurveInfo', n=side + '_' + type + '_' + twistType[twistLoop] + 'Twist_' + paddingSize + '_' + gv.pointOnCurveInfo)
-            cmds.setAttr (pointOnCrInfo + '.turnOnPercentage', 1, k=1, l=1)
-            cmds.setAttr (pointOnCrInfo + '.parameter', twistPose, k=1)  
-
-            #twistCurveShape
-            cmds.connectAttr (twistCurveShape[0] + '.worldSpace[0]', pointOnCrInfo + '.inputCurve')       
-            cmds.connectAttr (pointOnCrInfo + '.positionX', eachTwistLocator[0] + '.translateX')       
-            cmds.connectAttr (pointOnCrInfo + '.positionY', eachTwistLocator[0] + '.translateY')       
-            cmds.connectAttr (pointOnCrInfo + '.positionZ', eachTwistLocator[0] + '.translateZ')               
-
-            cmds.parent (eachTwistLocator[0], twistDeformGroup)
-
-            cmds.connectAttr (gv.globalScale + '_' + gv.group + '.scaleX', eachTwistLocator[0] + '.scaleX', f=1)
-            cmds.connectAttr (gv.globalScale + '_' + gv.group + '.scaleY', eachTwistLocator[0] + '.scaleY', f=1)
-            cmds.connectAttr (gv.globalScale + '_' + gv.group + '.scaleZ', eachTwistLocator[0] + '.scaleZ', f=1)
-
-            #Aim Constrain
-            if tJntLoop>0 :
-                twistAimConst       = cmds.aimConstraint(twistLocators [tJntLoop], twistLocators[tJntLoop-1],  o=[0, 0, 0], w=1, aim=[1, 0, 0], u=[0, 1, 0], wut='objectrotation', wu=[0,1,0], wuo=objectUpLocator[0], n=twistLocators[tJntLoop-1] + '_' + gv.aimConstraint)
-
-            if tJntLoop==len(twistJoints[twistLoop])-1 :
-                twistAimConst       = cmds.aimConstraint (twistLocators[tJntLoop-1], twistLocators [tJntLoop],  o=[0, 0, 0], w=1, aim=[-1, 0, 0], u=[0, 1, 0], wut='objectrotation', wu=[0,1,0], wuo=objectUpLocator[0], n=twistLocators [tJntLoop] + '_' + gv.aimConstraint)
-
-            cmds.addAttr (configure, ln=sideName + '_' + type + '_' + twistType[twistLoop] + 'Twist_' + paddingSize,  at='double', dv=twistPose, k=1)
-            cmds.addAttr (middleTwistControl[1], ln=twistType[twistLoop] + 'Twist_' + paddingSize,  at='double', dv=twistPose)
-
-            legTwistBlendColor      = cmds.shadingNode ('blendColors',  asUtility=1, n=side + '_' + type + '_' + twistType[twistLoop] + 'Twist_' + paddingSize + '_' + gv.blendColor)
-            cmds.connectAttr (legLowerTwist_mdsn[twistLoop] + '.outputX', legTwistBlendColor + '.color1R', f=1)
-            cmds.connectAttr (legUpperTwist_mdsn[twistLoop] + '.outputX', legTwistBlendColor + '.color2R', f=1)               
-            cmds.connectAttr (legTwistBlendColor + '.outputR', eachTwistJoint + '.rotateX', f=1)
-            cmds.connectAttr (configure + '.'+ sideName + '_' + type + '_' + twistType[twistLoop] + 'Twist_' + paddingSize, legTwistBlendColor + '.blender', f=1)
-            cmds.connectAttr (middleTwistControl[1] + '.' + twistType[twistLoop] + 'Twist_' + paddingSize, configure + '.'+ sideName + '_' + type + '_' + twistType[twistLoop] + 'Twist_' + paddingSize, f=1)
-
-            twistPose               = twistPose + twistPoseIng
-
-    #Twist curve bind joints       
-    twistLocatorGroup               = cmds.group (em=1, n=side + '_' + type + '_' + 'Twist' + '_' + gv.group)
-    cmds.setAttr (twistLocatorGroup + '.visibility', 0, l=1)
-    cmds.parent (twistLocatorGroup, globalLimbJointGroup)  
-
-    twistBindJoints                 = []
-    twistControls                   = [upperTwistControl[0], middleTwistControl[0], lowerTwistControl[0]]       
-    twistAttribute                  = [type + 'UpperTwist', type + 'MiddleTwist', type + 'LowerTwist']
-    limbJoints                      = [upperJoints[0], lowerJoints[0], lowerJoints[-1]]
-
-    twistLockLocator                = cmds.spaceLocator (p=[0, 0, 0], n=side + '_' + type + '_Twist_' + gv.locator)
-    twistLockLocGroup               = cmds.group (em=1, n=side + '_' + type + '_Twist_' + gv.locator + '_' + gv.group)
-    
-    cmds.parent (twistLockLocator[0], twistLockLocGroup)
-    generic.locatorSacle (twistLockLocator, 0.1, 1)
-    generic.snapAction (blendJoints[0], twistLockLocGroup)
-    cmds.parent (twistLockLocGroup, twistLocatorGroup)       
-
-    cmds.select (cl=1)
-    
-    for twistBindLoop in range (0, 3, 1) : 
-        cmds.select (cl=1)
-        twistBindJoint              = cmds.joint (rad=gv.jntRadius, n=side + '_' + type + '_' + twistCtrlType[twistBindLoop] + 'Twist_' + gv.joint)
-        twistBindJointGroup         = cmds.group (em=1, n=side + '_' + type + '_' + twistCtrlType[twistBindLoop] + 'Twist_' + gv.joint + '_' + gv.group)
-
-        cmds.parent (twistBindJoint, twistBindJointGroup)           
-    
-        generic.snapAction (limbJoints[twistBindLoop], twistBindJointGroup)   
-        cmds.makeIdentity (twistBindJoint, a=1, t=0, r=1, s=0, n=0)
-        twistBindJoints.append (twistBindJoint)           
-        cmds.parent (twistBindJointGroup, twistLocatorGroup)            
-        cmds.select (cl=1)
-
-        twistParentConst            = cmds.parentConstraint (twistControls[twistBindLoop], twistBindJointGroup, w=1, n=twistBindJointGroup + '_' + gv.parentConstraint)
-        twistScaleConst             = cmds.scaleConstraint (twistControls[twistBindLoop], twistBindJointGroup, o=[1,1,1], w=1, n=twistBindJointGroup + '_' + gv.scaleConstraint)
-
-        twistLocator                = cmds.spaceLocator (p=[0, 0, 0], n=side + '_' + type + '_' + twistCtrlType[twistBindLoop] + 'Twist_' + gv.locator)
-        twistLocGroup               = cmds.group (em=1, n=side + '_' + type + '_' + twistCtrlType[twistBindLoop] + 'Twist_' + gv.locator + '_' + gv.group)
-
-        cmds.parent (twistLocator[0], twistLocGroup)
-        generic.locatorSacle (twistLocator, 0.1, 0)
-        generic.snapAction (limbJoints[twistBindLoop], twistLocGroup)
-        cmds.parent (twistLocGroup, twistLocatorGroup)
-
-        twistLocConst               = cmds.parentConstraint (twistControls[twistBindLoop], twistLocator[0], w=1, n=twistLocator[0] + '_' + gv.parentConstraint)
-
-        #Connect to configure node
-        cmds.connectAttr (twistLocator[0] + '.rotateX', configure + '.' + sideName + twistAttribute[twistBindLoop], f=1)
-    
-    cmds.skinCluster (twistBindJoints, twistCurves[0], tsb=True, mi=1, dr=4.0, rui=0, normalizeWeights=1, obeyMaxInfluences=True, n=twistCurves[0] + '_SkinClu')
-    cmds.skinCluster (twistBindJoints, twistCurves[1], tsb=True, mi=1, dr=4.0, rui=0, normalizeWeights=1, obeyMaxInfluences=True, n=twistCurves[1] + '_SkinClu')
-
-    kneeParentConst                 = cmds.parentConstraint (middleKneeControl[0], middleTwistControl[3], w=1, n=middleTwistControl[3] + '_' + gv.parentConstraint)
-    kneeScaleConst                  = cmds.scaleConstraint (middleKneeControl[0], middleTwistControl[3], o=[1,1,1], w=1, n=middleTwistControl[3] + '_' + gv.scaleConstraint)                           
-
-    #Leg Middle Twist Position
-    middlePointConst                = cmds.pointConstraint (blendJoints[0], blendJoints[1], blendJoints[2], middleKneeControl[3], o=[0, 0, 0], w=1, n=middleKneeControl[3] + '_' + gv.pointConstraint)
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[0] + 'W0', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=0, v=0)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[1] + 'W1', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=0, v=1)        
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[2] + 'W2', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=0, v=0)       
-
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[0] + 'W0', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=1, v=1)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[1] + 'W1', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=1, v=0)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[2] + 'W2', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=1, v=0)   
-
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[0] + 'W0', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=-1, v=0)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[1] + 'W1', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=-1, v=0)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[2] + 'W2', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=-1, v=1)
-
-    #Connect to configure node
-    cmds.addAttr (upperTwistControl[1], ln='twistFallOff', at='double', min=-1, max=1, dv=1, k=1)
-    cmds.addAttr (middleTwistControl[1], ln='twistFallOff', at='double', min=-1, max=1, dv=1, k=1)
-    cmds.addAttr (lowerTwistControl[1], ln='twistFallOff', at='double', min=-1, max=1, dv=1, k=1)       
-    cmds.addAttr (middleKneeControl[1], ln='position', at='double', min=-1, max=1, dv=0, k=1)       
-
-    cmds.connectAttr (upperTwistControl[1] + '.twistFallOff', configure + '.' + sideName + type + 'UpperTwistFallOff',  f=1)
-    cmds.connectAttr (middleTwistControl[1] + '.twistFallOff', configure + '.' + sideName + type + 'MiddleTwistFallOff',  f=1)
-    cmds.connectAttr (lowerTwistControl[1] + '.twistFallOff', configure + '.' + sideName + type + 'LowerTwistFallOff',  f=1)       
-    cmds.connectAttr (middleKneeControl[1] + '.position', configure + '.' + sideName + type + 'MiddleTwistPosition',  f=1)
-    
-    cmds.undoInfo(closeChunk=1)
-    
-'''   
-    
-    
     
     
     

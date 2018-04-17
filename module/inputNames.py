@@ -137,7 +137,9 @@ class Names (object) :
         self._aimConstraint = 'AimConstraint' 
         self._parentConstraint = 'ParentConstraint'
         self._scaleConstraint = 'ScaleConstraint'
-        self._poleVectorConstraint = 'PoleVectorConstraint'      
+        self._poleVectorConstraint = 'PoleVectorConstraint'
+        
+        self._skinCluster = 'SkinCluster'     
 
         self._ikHandle = 'IKHandle'
         self._effector = 'IKEffector'             
