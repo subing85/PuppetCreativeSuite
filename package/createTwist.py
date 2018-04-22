@@ -91,11 +91,15 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
     twistControlGroup.connectAttr('lowerTwist', '{}.input1X'.format(lowerTwist_mdn), f=True)
     
     twistControlGroup.connectAttr('upperTwistFallOff', '{}.input2X'.format(upperTwist_mdn), f=True)    
-    twistControlGroup.connectAttr('middleTwistPosition', '{}.input2X'.format(middleUpTwist_mdn), f=True)    
+    twistControlGroup.connectAttr('middleTwistFallOff', '{}.input2X'.format(middleUpTwist_mdn), f=True)    
     twistControlGroup.connectAttr('middleTwistFallOff', '{}.input2X'.format(middleDnTwist_mdn), f=True)    
     twistControlGroup.connectAttr('lowerTwistFallOff', '{}.input2X'.format(lowerTwist_mdn), f=True)
     
-    nullMiddle, shapeMiddle, offsetMiddle, groupMiddle = control.create(type='SmoothSphere', name='{}_Middle'.format(type), side=side, radius=radius/1.75, orientation=orientation, positionNode=dkJoints[1])    
+    nullMiddle, shapeMiddle, offsetMiddle, groupMiddle = control.create(type='SmoothSphere', 
+                                                                        name='{}_Middle'.format(type), side=side, 
+                                                                        radius=radius/1.75, 
+                                                                        orientation=orientation, 
+                                                                        positionNode=dkJoints[1])    
     generic.lockHideAttributes(shapeMiddle, 'lockHide', ['rx', 'ry', 'rz', 'sx', 'sy', 'sz', 'v'])
     groupMiddle.setParent (twistControlGroup) 
 
@@ -170,7 +174,6 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
             generic.snap(twistJoints[index][twistIntex], twistLocator)        
             pymel.makeIdentity (twistJoint, a=1, t=0, r=1, s=0, n=0)            
             
-            
             pointOnCrInfo = generic.getNameStyle ([side, type, '{}_{}_{}'.format (twistType[index], paddingSize, input._pointOnCurveInfo)])
             generic.removeExistsNode([pointOnCrInfo])               
             pointOnCrInfo = pymel.createNode ('pointOnCurveInfo', n=pointOnCrInfo)            
@@ -214,7 +217,8 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
                                     wut='objectrotation', 
                                     wu=[0,1,0], 
                                     wuo=objectUpLocator, 
-                                    n=aimConstraint)            
+                                    n=aimConstraint
+                                    )            
             
             eachTwistAttribute = '{}_{}_{}_Twist_{}'.format(side, type, twistType[index], paddingSize) 
             twistControlGroup.addAttr(eachTwistAttribute, at='double', dv=0, k=1)
@@ -296,87 +300,62 @@ def twist(side, type, upperTwistJoints, lowerTwistJoints, dkJoints, twistAxis, r
     lowerCurveskincluster = generic.getNameStyle ([side, type, '{}_{}_{}'.format (twistType[1], input._curve, input._skinCluster)])
     generic.removeExistsNode([lowerCurveskincluster])     
     pymel.skinCluster(twistBindJoints, twistCurves[1], tsb=True, mi=1, dr=4.0, rui=0, normalizeWeights=1, obeyMaxInfluences=True, n=lowerCurveskincluster)
-              
-    ''' 
-    kneeParentConst                 = cmds.parentConstraint (middleKneeControl[0], middleTwistControl[3], w=1, n=middleTwistControl[3] + '_' + gv.parentConstraint)
-    kneeScaleConst                  = cmds.scaleConstraint (middleKneeControl[0], middleTwistControl[3], o=[1,1,1], w=1, n=middleTwistControl[3] + '_' + gv.scaleConstraint)                           
-
-    #Leg Middle Twist Position
-    middlePointConst                = cmds.pointConstraint (blendJoints[0], blendJoints[1], blendJoints[2], middleKneeControl[3], o=[0, 0, 0], w=1, n=middleKneeControl[3] + '_' + gv.pointConstraint)
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[0] + 'W0', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=0, v=0)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[1] + 'W1', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=0, v=1)        
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[2] + 'W2', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=0, v=0)       
-
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[0] + 'W0', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=1, v=1)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[1] + 'W1', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=1, v=0)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[2] + 'W2', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=1, v=0)   
-
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[0] + 'W0', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=-1, v=0)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[1] + 'W1', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=-1, v=0)       
-    cmds.setDrivenKeyframe (middlePointConst[0] + '.' + blendJoints[2] + 'W2', cd=configure + '.' + sideName + type + 'MiddleTwistPosition', itt='linear', ott='linear', dv=-1, v=1)
-
-    #Connect to configure node
-    cmds.addAttr (upperTwistControl[1], ln='twistFallOff', at='double', min=-1, max=1, dv=1, k=1)
-    cmds.addAttr (middleTwistControl[1], ln='twistFallOff', at='double', min=-1, max=1, dv=1, k=1)
-    cmds.addAttr (lowerTwistControl[1], ln='twistFallOff', at='double', min=-1, max=1, dv=1, k=1)       
-    cmds.addAttr (middleKneeControl[1], ln='position', at='double', min=-1, max=1, dv=0, k=1)       
-
-    cmds.connectAttr (upperTwistControl[1] + '.twistFallOff', configure + '.' + sideName + type + 'UpperTwistFallOff',  f=1)
-    cmds.connectAttr (middleTwistControl[1] + '.twistFallOff', configure + '.' + sideName + type + 'MiddleTwistFallOff',  f=1)
-    cmds.connectAttr (lowerTwistControl[1] + '.twistFallOff', configure + '.' + sideName + type + 'LowerTwistFallOff',  f=1)       
-    cmds.connectAttr (middleKneeControl[1] + '.position', configure + '.' + sideName + type + 'MiddleTwistPosition',  f=1)
     
-    cmds.undoInfo(closeChunk=1)       
+    kneeParentConst = generic.getNameStyle ([side, type, 'MiddleTwist_{}_{}_{}'.format(input._control, input._group, input._parentConstraint)])    
+    kneeScaleConst = generic.getNameStyle ([side, type, 'MiddleTwist_{}_{}_{}'.format(input._control, input._group, input._scaleConstraint)])    
+    middlePointConst = generic.getNameStyle ([side, 'Middle', '{}_{}_{}_{}'.format(type, input._control, input._group, input._pointConstraint)])    
+     
+    pymel.parentConstraint(nullMiddle, groupMiddleTwist, w=True, n=kneeParentConst)
+    pymel.scaleConstraint(nullMiddle, groupMiddleTwist, w=True, o=[1,1,1], n=kneeScaleConst)    
+    middlePointConst = pymel.pointConstraint (dkJoints[0], dkJoints[1], dkJoints[2], groupMiddle, o=[0, 0, 0], w=1, n=middlePointConst)
+    
+    pymel.setDrivenKeyframe('{}.{}W0'.format(middlePointConst, dkJoints[0]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=-1, v=1)
        
-       
-    '''
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-            
-            
+    pymel.setDrivenKeyframe('{}.{}W1'.format(middlePointConst, dkJoints[1]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=-1, v=0)    
+    
+    pymel.setDrivenKeyframe('{}.{}W2'.format(middlePointConst, dkJoints[2]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=-1, v=0)    
+    
+    pymel.setDrivenKeyframe('{}.{}W0'.format(middlePointConst, dkJoints[0]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=0, v=0)
+    
+    pymel.setDrivenKeyframe('{}.{}W1'.format(middlePointConst, dkJoints[1]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=0, v=1)    
+    
+    pymel.setDrivenKeyframe('{}.{}W2'.format(middlePointConst, dkJoints[2]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=0, v=0)    
+    
+    pymel.setDrivenKeyframe('{}.{}W0'.format(middlePointConst, dkJoints[0]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=1, v=0)
+    
+    pymel.setDrivenKeyframe('{}.{}W1'.format(middlePointConst, dkJoints[1]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=1, v=0)    
+    
+    pymel.setDrivenKeyframe('{}.{}W2'.format(middlePointConst, dkJoints[2]), 
+                            cd='{}.middleTwistPosition'.format(twistControlGroup),
+                            itt='linear', ott='linear', dv=1, v=1)         
+    
+    shapeUpperTwist.addAttr('twistFallOff', at='double', min=-1, max=1, dv=1, k=True)
+    shapeMiddleTwist.addAttr('twistFallOff', at='double', min=-1, max=1, dv=1, k=True)
+    shapeLowerTwist.addAttr('twistFallOff', at='double', min=-1, max=1, dv=1, k=True)
+    shapeMiddle.addAttr('position', at='double', min=-1, max=1, dv=0, k=True)   
+   
+    shapeUpperTwist.connectAttr('twistFallOff', '{}.upperTwistFallOff'.format(twistControlGroup), f=True)    
+    shapeMiddleTwist.connectAttr('twistFallOff', '{}.middleTwistFallOff'.format(twistControlGroup), f=True)    
+    shapeLowerTwist.connectAttr('twistFallOff', '{}.lowerTwistFallOff'.format(twistControlGroup), f=True)
+    shapeMiddle.connectAttr('position', '{}.middleTwistPosition'.format(twistControlGroup), f=True)    
 
     pymel.undoInfo(closeChunk=1)
-    return twistControlGroup
-   
+    return twistControlGroup   
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
+#End ############################################################################################################
