@@ -34,14 +34,17 @@ from module import collectBundels
 from module import openGeneric
 from module import inputNames
 from package import createLimb
+from package import createFoot
 
 reload(openStyleSheet)
 reload(collectBundels)
 reload(openGeneric)
 reload(createLimb)
 reload(inputNames)
-
 reload(collectBundels)
+reload(createFoot)
+
+
 from maya import cmds
 from maya import mel
 from pymel import core as pymel
@@ -258,8 +261,25 @@ class Puppet (QtGui.QMainWindow):
                                 poleVector={self.input._legPoleVector: leftPoleVector[0]},
                                 radius=radius)        
         limb.create()
-
         
+        
+        leftBall = generic.getJointFromLabel(1, 'Ball', False)
+        leftToe = generic.getJointFromLabel(1, 'Toe', False)   
+        leftHeel = generic.getJointFromLabel(1, 'Heel', False)   
+        leftPinkyToe = generic.getJointFromLabel(1, 'PinkyToe', False)   
+        leftBigToe = generic.getJointFromLabel(1, 'BigToe', False)           
+         
+        foot = createFoot.Foot( side=self.input._leftSide,
+                                type=self.input._foot,
+                                ankle=leftAnkle[0],                                
+                                ball=leftBall[0],
+                                toe=leftToe[0],                               
+                                heel=leftHeel[0],
+                                pinkyToe=leftPinkyToe[0], 
+                                bigToe=leftBigToe[0],                            
+                                radius=radius) 
+  
+        foot.create()        
                 
         #create left leg   
         

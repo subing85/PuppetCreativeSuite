@@ -92,7 +92,6 @@ class Limb(object):
 
     def create(self):
         pymel.undoInfo(openChunk=1) 
-        generic = openGeneric.Generic()
         
         generic = openGeneric.Generic()
         
@@ -134,14 +133,17 @@ class Limb(object):
          
         pevlis_dkGroup = generic.createGroup(pevlis_dk, pevlis_dkGroup)
         pevlis_ikGgroup = generic.createGroup(pevlis_ik, pevlis_ikGgroup)
-        pevlis_fkGroup = generic.createGroup(pevlis_fk, pevlis_fkGroup)        
+        pevlis_fkGroup = generic.createGroup(pevlis_fk, pevlis_fkGroup)
          
         jointGroup = generic.getNameStyle ([self.side, self.type, '{}_{}'.format (self.input._joint, self.input._group)])
         jointGroup = generic.createGroup(None, jointGroup)
         
         pevlis_ikGgroup.setParent (jointGroup)
         pevlis_fkGroup.setParent (jointGroup)
-        pevlis_dkGroup.setParent (jointGroup)
+        pevlis_dkGroup.setParent (jointGroup)        
+         
+        pevlis_ikGgroup.setAttr ('visibility', 0, l=True)    
+        pevlis_fkGroup.setAttr ('visibility', 0, l=True)            
          
         ikJoints = [pevlis_ik, knee_ik, ankle_ik]
         fkJoints = [pevlis_fk, knee_fk, ankle_fk]
@@ -197,8 +199,7 @@ class Limb(object):
             groupFk.setParent(fkControlGroup)                     
              
         #IK Controls
-        ikHandle = generic.getNameStyle([self.side, types[index], self.input._ikHandle])
-         
+        ikHandle = generic.getNameStyle([self.side, types[index], self.input._ikHandle])         
         if pymel.objExists(ikHandle):
             pymel.delete (ikHandle)      
                     
@@ -206,8 +207,7 @@ class Limb(object):
         ikEffector = generic.getNameStyle([self.side, types[index], self.input._effector])          
         ikHandle[1].rename(ikEffector)
          
-        ikHandleGroup = generic.getNameStyle ([self.side, types[index], '{}_{}'.format(self.input._ikHandle, self.input._group)])
-         
+        ikHandleGroup = generic.getNameStyle ([self.side, types[index], '{}_{}'.format(self.input._ikHandle, self.input._group)])         
         if pymel.objExists(ikHandleGroup):
             pymel.delete (ikHandleGroup)          
          
@@ -245,8 +245,7 @@ class Limb(object):
         from package import createIKStretch
         #reload(createIKStretch)
         strechGroup = createIKStretch.iKStretch(self.side, self.type, ikJoints, ikHandle[0], nullKneeIk, 'translateX', 1)
-        strechGroup.setParent (jointGroup)    
-              
+        strechGroup.setParent (jointGroup)
        
         #Connection to control
         shapeAnkleIK.addAttr('switchStretch', at='double', min=0, max=1, dv=0, k=1)
@@ -276,21 +275,10 @@ class Limb(object):
         from package import createTwist
         reload(createTwist)
         twistGroup = createTwist.twist(self.side, self.type, upperTwistJoints, lowerTwistJoints, dkJoints, 'rotateX', self.radius, [90,0,0])
-        #twist(controlScale, type, side, sideName, upperJoints, lowerJoints, blendJoints)
-                  
-        twistGroup.setParent (controlGroup)
+        #twist(controlScale, type, side, sideName, upperJoints, lowerJoints, blendJoints)                  
+        twistGroup.setParent (controlGroup)            
         
-        
-        
-        
-        
-        pymel.select(cl=True)       
-                  
-                  
-                  
-                  
-                  
-                  
+        pymel.select(cl=True)                   
         pymel.undoInfo(closeChunk=1)         
         
 
