@@ -251,11 +251,20 @@ class Generic (object):
     def snap(self, source, target):   
         
         try:           
-            constraint = pymel.parentConstraint(source, target, w=1)
+            constraint = pymel.parentConstraint(source, target, w=True)
             pymel.delete(constraint)    
         except Exception as result:
             print result
-            
+                        
+    
+    def snapTranslate(self, source, target):
+        
+        try:           
+            constraint = pymel.pointConstraint(source, target, offset=(0,0,0), w=True)
+            pymel.delete(constraint)    
+        except Exception as result:
+            print result
+                        
             
     def setParents(self, nodes):        
         

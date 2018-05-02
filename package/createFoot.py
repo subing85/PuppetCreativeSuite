@@ -1,7 +1,7 @@
 '''
 Foot for Puppet Creative Suite v1.0.0
 Date : April 25, 2018
-Last modified: April 25, 2018
+Last modified: May 02, 2018
 Author: Subin. Gopi (subing85@gmail.com)
 
 # Copyright (c) 2018, Subin Gopi
@@ -90,6 +90,8 @@ class Foot(object):
         
     def create(self):
         
+        pymel.undoInfo(openChunk=1) 
+        
         generic = openGeneric.Generic()
         
         #Create deformer joint         
@@ -148,7 +150,7 @@ class Foot(object):
         types = [self.input._ankle, self.input._ball, self.input._toe]                   
          
         #IK FK Blending
-        jointGroup.addAttr(self.input._ikfkBlend,  at='double', min=0, max=1, dv=0, k=1)            
+        jointGroup.addAttr(self.input._ikfkBlend,  at='double', min=0, max=1, dv=0, k=True)            
 
         for index in range (len(ikJoints)):     
                      
@@ -183,7 +185,7 @@ class Foot(object):
         for index in range (len(fkJoints)-1):
              
             #fkControlName = generic.getNameStyle([self.side, types[index], self.input._control])
-            nullFk, shapeFk, offsetFk, groupFk = self.control.create(type='Circle', name='{}_{}_{}'.format(self.type, types[index], self.input._fk), side=self.side, radius=self.radius, orientation=[0,0,0], positionNode=fkJoints[index])    
+            nullFk, shapeFk, offsetFk, groupFk = self.control.create(type='Circle', name='{}_{}_{}'.format(self.type, types[index], self.input._fk), side=self.side, radius=self.radius/1.5, orientation=[0,0,0], positionNode=fkJoints[index])    
              
             if index>0:                
                 generic.snap(groupFk, fkControls[index-1][0])
@@ -196,162 +198,183 @@ class Foot(object):
             groupFk.setParent(fkControlGroup)           
    
         #IK Controls
-        ikAnkleHandle = generic.getNameStyle([self.side, '{}_{}'.format(self.type, types[0]), self.input._ikHandle])         
-        if pymel.objExists(ikAnkleHandle):
-            pymel.delete (ikAnkleHandle)      
-                     
-        ikAnkleHandle = pymel.ikHandle(n=ikAnkleHandle, sj=ankle_ik, ee=ball_ik, sol='ikRPsolver', s='sticky')
-        ikAnkleEffector = generic.getNameStyle([self.side, '{}_{}'.format(self.type, types[0]), self.input._effector])          
-        ikAnkleHandle[1].rename(ikAnkleEffector)
-         
-        ikAnkleHandleGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, types[0]), '{}_{}'.format(self.input._ikHandle, self.input._group)])         
-        if pymel.objExists(ikAnkleHandleGroup):
-            pymel.delete (ikAnkleHandleGroup)          
-          
-        ikAnkleHandleGroup = generic.createGroup(ikAnkleHandle[0], ikAnkleHandleGroup)
-        ikAnkleHandle[0].setParent(ikAnkleHandleGroup)
-        ikAnkleHandleGroup.setParent(jointGroup)
-         
         ikBallHandle = generic.getNameStyle([self.side, '{}_{}'.format(self.type, types[1]), self.input._ikHandle])         
         if pymel.objExists(ikBallHandle):
             pymel.delete (ikBallHandle)      
                      
-        ikBallHandle = pymel.ikHandle(n=ikBallHandle, sj=ball_ik, ee=toe_ik, sol='ikRPsolver', s='sticky')
-        ikBallEffector = generic.getNameStyle([self.side, '{}_{}'.format(self.type, types[1]), self.input._effector])          
-        ikBallHandle[1].rename(ikBallEffector) 
-
+        ikBallHandle = pymel.ikHandle(n=ikBallHandle, sj=ankle_ik, ee=ball_ik, sol='ikRPsolver', s='sticky')
+        ikAnkleEffector = generic.getNameStyle([self.side, '{}_{}'.format(self.type, types[1]), self.input._effector])          
+        ikBallHandle[1].rename(ikAnkleEffector)
+         
         ikBallHandleGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, types[1]), '{}_{}'.format(self.input._ikHandle, self.input._group)])         
         if pymel.objExists(ikBallHandleGroup):
             pymel.delete (ikBallHandleGroup)          
           
         ikBallHandleGroup = generic.createGroup(ikBallHandle[0], ikBallHandleGroup)
         ikBallHandle[0].setParent(ikBallHandleGroup)
-        ikBallHandleGroup.setParent(jointGroup)              
-        
+        ikBallHandleGroup.setParent(jointGroup)         
+         
+        ikToeHandle = generic.getNameStyle([self.side, '{}_{}'.format(self.type, types[2]), self.input._ikHandle])         
+        if pymel.objExists(ikToeHandle):
+            pymel.delete (ikToeHandle)      
+                     
+        ikToeHandle = pymel.ikHandle(n=ikToeHandle, sj=ball_ik, ee=toe_ik, sol='ikRPsolver', s='sticky')
+        ikBallEffector = generic.getNameStyle([self.side, '{}_{}'.format(self.type, types[2]), self.input._effector])          
+        ikToeHandle[1].rename(ikBallEffector) 
+
+        ikToeHandleGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, types[2]), '{}_{}'.format(self.input._ikHandle, self.input._group)])         
+        if pymel.objExists(ikToeHandleGroup):
+            pymel.delete (ikToeHandleGroup)          
+          
+        ikToeHandleGroup = generic.createGroup(ikToeHandle[0], ikToeHandleGroup)
+        ikToeHandle[0].setParent(ikToeHandleGroup)
+        ikToeHandleGroup.setParent(jointGroup)
      
+        #IK ball Control        
+        nullBallIK, shapeBallIK, offsetBallIK, groupBallIK = self.control.create(type='Circle', name='{}_{}_{}'.format(self.type, types[1], self.input._ik), side=self.side, radius=self.radius/1.5, orientation=[0,0,0], positionNode=ball_ik) 
+        groupBallIK.setParent(ikControlGroup)        
+        generic.lockHideAttributes(shapeBallIK, 'lockHide', ['tx', 'ty', 'tz', 'sx', 'sy', 'sz', 'v'])     
+        shapeBallIK.setAttr('rotateOrder', k=True, cb=True)
+        
+        #Ik Foot Roll
+        ikBallGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._ball), '{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikBallGroup = generic.createGroup(None, ikBallGroup)        
+        generic.snap(self.ball, ikBallGroup)
+        
+        ikBallRollGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._ball), 'Roll_{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikBallRollGroup = generic.createGroup(None, ikBallRollGroup) 
+        generic.snap(self.ball, ikBallRollGroup) 
+        
+        ikHeelGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._heel), '{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikHeelGroup = generic.createGroup(None, ikHeelGroup) 
+        generic.snap(self.heel, ikHeelGroup)   
+        
+        ikHeelRollGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._heel), 'Roll_{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikHeelRollGroup = generic.createGroup(None, ikHeelRollGroup) 
+        generic.snap(self.heel, ikHeelRollGroup)        
+        
+        ikToeGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._toe), '{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikToeGroup = generic.createGroup(None, ikToeGroup) 
+        generic.snap(self.toe, ikToeGroup)        
+                               
+        ikToeRollGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._toe), 'Roll_{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikToeRollGroup = generic.createGroup(None, ikToeRollGroup) 
+        generic.snap(self.toe, ikToeRollGroup)                       
 
+        ikBigToeGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._bigToe), '{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikBigToeGroup = generic.createGroup(None, ikBigToeGroup) 
+        generic.snap(self.bigToe, ikBigToeGroup)       
+            
+        ikPinkyToeGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._pinkyToe), '{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikPinkyToeGroup = generic.createGroup(None, ikPinkyToeGroup) 
+        generic.snap(self.pinkyToe, ikPinkyToeGroup)  
+        
+        ikAnkleGroup = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._ankle), '{}_{}'.format(self.input._ik, self.input._group)]) 
+        ikAnkleGroup = generic.createGroup(None, ikAnkleGroup) 
+        #generic.snap(self.ankle, ikAnkleGroup)  
+        generic.snapTranslate(self.ankle, ikAnkleGroup)  
+        
+        ikBallSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._ball), '{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikBallSdk = generic.createGroup(None, ikBallSdk) 
+        generic.snap(self.ball, ikBallSdk)
+                          
+        ikBallRollSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._ball), 'Roll_{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikBallRollSdk = generic.createGroup(None, ikBallRollSdk) 
+        generic.snap(self.ball, ikBallRollSdk)
+        
+        ikHeelSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._heel), '{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikHeelSdk = generic.createGroup(None, ikHeelSdk) 
+        generic.snap(self.heel, ikHeelSdk)   
+        
+        ikHeelRollSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._heel), 'Roll_{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikHeelRollSdk = generic.createGroup(None, ikHeelRollSdk) 
+        generic.snap(self.heel, ikHeelRollSdk)  
+                   
+        ikToeSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._toe), '{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikToeSdk = generic.createGroup(None, ikToeSdk) 
+        generic.snap(self.toe, ikToeSdk)        
+                               
+        ikToeRollSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._toe), 'Roll_{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikToeRollSdk = generic.createGroup(None, ikToeRollSdk) 
+        generic.snap(self.toe, ikToeRollSdk)                   
+  
+        ikBigToeSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._bigToe), '{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikBigToeSdk = generic.createGroup(None, ikBigToeSdk) 
+        generic.snap(self.bigToe, ikBigToeSdk)       
+            
+        ikPinkyToeSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._pinkyToe), '{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikPinkyToeSdk = generic.createGroup(None, ikPinkyToeSdk) 
+        generic.snap(self.pinkyToe, ikPinkyToeSdk)    
+  
+        ikAnkleSdk = generic.getNameStyle ([self.side, '{}_{}'.format(self.type, self.input._ankle), '{}_{}'.format(self.input._ik, self.input._sdk)]) 
+        ikAnkleSdk = generic.createGroup(None, ikAnkleSdk) 
+        #generic.snap(self.ankle, ikAnkleSdk)        
+        generic.snapTranslate(self.ankle, ikAnkleSdk)  
+        
+        ikBallSdk.setParent(ikBallGroup)
+        ikBallRollSdk.setParent(ikBallRollGroup)
+        ikHeelSdk.setParent(ikHeelGroup) 
+               
+        ikToeRollSdk.setParent(ikToeRollGroup)        
+        ikToeGroup.setParent(ikToeRollSdk)        
+         
+        ikBigToeSdk.setParent(ikBigToeGroup)
+        ikPinkyToeSdk.setParent(ikPinkyToeGroup)
+        ikAnkleSdk.setParent(ikAnkleGroup)
+        
+        pymel.parent(ikBallHandleGroup, ikToeHandleGroup, ikBallSdk)
+        pymel.parent(ikBallGroup, ikBallRollGroup, ikHeelRollSdk)
+        
+        ikHeelRollGroup.setParent(ikHeelSdk)
+        ikHeelGroup.setParent(ikToeSdk)
+        ikToeRollGroup.setParent(ikBigToeSdk)
+        ikBigToeGroup.setParent(ikPinkyToeSdk)
+        ikPinkyToeGroup.setParent(ikAnkleSdk)
 
-'''
+        shapeBallIK.connectAttr('rotate', '{}.rotate'.format(ikBallSdk), f=1) #Ik Control connections
+        
+        #Foot Roll Connections
+        jointGroup.addAttr('reverseFoot',  at='double', dv=0, k=True)            
+        jointGroup.setAttr('reverseFoot', cb=True)       
+        
+        jointGroup.addAttr('footRoll',  at='double', dv=0, k=True)            
+        jointGroup.addAttr('footRollAngle',  at='double', dv=0, k=True)            
+        jointGroup.addAttr('footTwist',  at='double', dv=0, k=True)            
+        jointGroup.addAttr('toeRoll',  at='double', dv=0, k=True)            
+        jointGroup.addAttr('toeTwist',  at='double', dv=0, k=True)            
+        jointGroup.addAttr('ballLift',  at='double', dv=0, k=True)            
+        jointGroup.addAttr('heelTwist',  at='double', dv=0, k=True) 
+        
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikBallRollSdk), cd='{}.footRoll'.format(jointGroup), itt='linear', ott='linear', dv=0, v=0)    
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikHeelRollSdk), cd='{}.footRoll'.format(jointGroup), itt='linear', ott='linear', dv=0, v=0)           
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikBallRollSdk), cd='{}.footRoll'.format(jointGroup), itt='linear', ott='linear', dv=180, v=-180)    
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikHeelRollSdk), cd='{}.footRoll'.format(jointGroup), itt='linear', ott='linear', dv=180, v=0)        
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikBallRollSdk), cd='{}.footRoll'.format(jointGroup), itt='linear', ott='linear', dv=-180, v=-0)    
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikHeelRollSdk), cd='{}.footRoll'.format(jointGroup), itt='linear', ott='linear', dv=-180, v=-180)
+        
+        jointGroup.connectAttr('footRollAngle', '{}.rotateY'.format(ikToeSdk), f=1)
+        jointGroup.connectAttr('footTwist', '{}.rotateZ'.format(ikBallRollSdk), f=1)
+        
+        pymel.setDrivenKeyframe('{}.rotateY'.format(ikToeRollSdk), cd='{}.toeRoll'.format(jointGroup), itt='linear', ott='linear', dv=0, v=0)    
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikHeelSdk), cd='{}.toeRoll'.format(jointGroup), itt='linear', ott='linear', dv=0, v=0)        
+        pymel.setDrivenKeyframe('{}.rotateY'.format(ikToeRollSdk), cd='{}.toeRoll'.format(jointGroup), itt='linear', ott='linear', dv=180, v=180)    
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikHeelSdk), cd='{}.toeRoll'.format(jointGroup), itt='linear', ott='linear', dv=180, v=0)        
+        pymel.setDrivenKeyframe('{}.rotateY'.format(ikToeRollSdk), cd='{}.toeRoll'.format(jointGroup), itt='linear', ott='linear', dv=180, v=0)    
+        pymel.setDrivenKeyframe('{}.rotateX'.format(ikHeelSdk), cd='{}.toeRoll'.format(jointGroup), itt='linear', ott='linear', dv=-180, v=-180)       
+        
+        jointGroup.connectAttr('toeTwist', '{}.rotateZ'.format(ikToeRollSdk), f=1)
+                          
+        pymel.setDrivenKeyframe('{}.rotateZ'.format(ikPinkyToeSdk), cd='{}.ballLift'.format(jointGroup), itt='linear', ott='linear', dv=0, v=0)    
+        pymel.setDrivenKeyframe('{}.rotateZ'.format(ikBigToeSdk), cd='{}.ballLift'.format(jointGroup), itt='linear', ott='linear', dv=0, v=0)    
+        
+        pymel.setDrivenKeyframe('{}.rotateZ'.format(ikPinkyToeSdk), cd='{}.ballLift'.format(jointGroup), itt='linear', ott='linear', dv=180, v=-180)    
+        pymel.setDrivenKeyframe('{}.rotateZ'.format(ikBigToeSdk), cd='{}.ballLift'.format(jointGroup), itt='linear', ott='linear', dv=180, v=0)            
+                      
+        pymel.setDrivenKeyframe('{}.rotateZ'.format(ikPinkyToeSdk), cd='{}.ballLift'.format(jointGroup), itt='linear', ott='linear', dv=-180, v=-180)    
+        pymel.setDrivenKeyframe('{}.rotateZ'.format(ikBigToeSdk), cd='{}.ballLift'.format(jointGroup), itt='linear', ott='linear', dv=-180, v=180)      
+        
+        jointGroup.connectAttr('heelTwist', '{}.rotateY'.format(ikHeelSdk), f=1)
 
-    #Ik Control    
-    ikControl               = createControl.createControl ('Circle', side + '_' + ballN + '_' + gv.ik, (0 + controlScale), normal=[0,0,0])
-    generic.snapAction (ikJoints[1], ikControl[3])
-    
-    cmds.parent (ikControl[3], footSideIkControlGroup)
-
-    generic.lockHideAttributes (fkControl[1], 'lockHide', ['tx', 'ty', 'tz', 'sx', 'sy', 'sz', 'v'])       
-    generic.lockHideAttributes (ikControl[1], 'lockHide', ['tx', 'ty', 'tz', 'sx', 'sy', 'sz', 'v'])   
-    cmds.setAttr (fkControl[1] + '.rotateOrder',  k=1, channelBox=1)           
-
-    #Ik Controls setup
-    ballIkHandle                = cmds.ikHandle (n=side + '_' + ballN + '_' + gv.ikHandle, sj=ikJoints[0], ee=ikJoints[1], sol='ikSCsolver', s='sticky')
-    ballIkEffector              = cmds.rename (ballIkHandle[1], side + '_' + ballN + '_' + gv.effector)               
-    
-    toeIkHandle                 = cmds.ikHandle (n=side + '_' + toeN + '_' + gv.ikHandle, sj=ikJoints[1], ee=ikJoints[2], sol='ikSCsolver', s='sticky')
-    toeIkEffector               = cmds.rename (toeIkHandle[1], side + '_' + toeN + '_' + gv.effector)       
-
-    #Foot Roll         
-    ikBallGroup                 = cmds.group (em=1, n=side + '_' + gv.ball + '_' + gv.ik + '_' + gv.group)
-    ikBallRollGroup             = cmds.group (em=1, n=side + '_' + gv.ball + '_Roll_' + gv.ik + '_' + gv.group)
-    ikHeelRollGroup             = cmds.group (em=1, n=side + '_' + gv.heel + '_Roll_' + gv.ik + '_' + gv.group)
-    ikHeelGroup                 = cmds.group (em=1, n=side + '_' + gv.heel + '_' + gv.ik + '_' + gv.group)
-    ikToeGroup                  = cmds.group (em=1, n=side + '_' + gv.toe + '_' + gv.ik + '_' + gv.group)
-    ikToeRollGroup              = cmds.group (em=1, n=side + '_' + gv.toe + '_Roll_' + gv.ik + '_' + gv.group)
-    ikBigToeGroup               = cmds.group (em=1, n=side + '_' + gv.bigToe + '_' + gv.ik + '_' + gv.group)
-    ikPinkyToeGroup             = cmds.group (em=1, n=side + '_' + gv.pinkyToe + '_' + gv.ik + '_' + gv.group)
-    ikAnkleGroup                = cmds.group (em=1, n=side + '_' + gv.foot + '_' + gv.ik + '_' + gv.group)       
-
-    ikBallSdk                   = cmds.group (em=1, n=side + '_' + gv.ball + '_' + gv.ik + '_' + gv.sdk)
-    ikBallRollSdk               = cmds.group (em=1, n=side + '_' + gv.ball + '_Roll_' + gv.ik + '_' + gv.sdk)
-    ikHeelRollSdk               = cmds.group (em=1, n=side + '_' + gv.heel + '_Roll_' + gv.ik + '_' + gv.sdk)
-    ikHeelSdk                   = cmds.group (em=1, n=side + '_' + gv.heel + '_' + gv.ik + '_' + gv.sdk)
-    ikToeSdk                    = cmds.group (em=1, n=side + '_' + gv.toe + '_' + gv.ik + '_' + gv.sdk)
-    ikToeRollSdk                = cmds.group (em=1, n=side + '_' + gv.toe + '_Roll_' + gv.ik + '_' + gv.sdk)
-    ikBigToeSdk                 = cmds.group (em=1, n=side + '_' + gv.bigToe + '_' + gv.ik + '_' + gv.sdk)
-    ikPinkyToeSdk               = cmds.group (em=1, n=side + '_' + gv.pinkyToe + '_' + gv.ik + '_' + gv.sdk)
-    ikAnkleSdk                  = cmds.group (em=1, n=side + '_' + gv.foot + '_' + gv.ik + '_' + gv.sdk)
-
-    cmds.parent (ikBallSdk, ikBallGroup)
-    cmds.parent (ikBallRollSdk, ikBallRollGroup)
-    cmds.parent (ikHeelRollSdk, ikHeelRollGroup)
-    cmds.parent (ikHeelSdk, ikHeelGroup)
-    cmds.parent (ikToeRollSdk, ikToeRollGroup)
-
-    cmds.parent (ikToeSdk, ikToeGroup) 
-    cmds.parent (ikToeGroup, ikToeRollSdk)       
-
-    cmds.parent (ikBigToeSdk, ikBigToeGroup)
-    cmds.parent (ikPinkyToeSdk, ikPinkyToeGroup)
-    cmds.parent (ikAnkleSdk, ikAnkleGroup)
-
-    generic.snapAction (ball, ikBallGroup)
-    generic.snapAction (ball, ikBallRollGroup)
-    generic.snapAction (heel, ikHeelRollGroup)
-    generic.snapAction (heel, ikHeelGroup)
-    generic.snapAction (toe, ikToeRollGroup)
-    generic.snapAction (bigToe, ikBigToeGroup)
-    generic.snapAction (pinkyToe, ikPinkyToeGroup)
-    generic.snapTranslate (ankle, ikAnkleGroup)
-
-    cmds.parent (ballIkHandle[0], toeIkHandle[0], ikBallSdk)
-    #cmds.parent (ankleIkHandle[0], ikBallRollSdk)
-    cmds.parent (ikBallGroup, ikBallRollGroup, ikHeelRollSdk)
-    cmds.parent (ikHeelRollGroup, ikHeelSdk)
-    cmds.parent (ikHeelGroup, ikToeSdk)
-    cmds.parent (ikToeRollGroup, ikBigToeSdk)
-    cmds.parent (ikBigToeGroup, ikPinkyToeSdk)
-    cmds.parent (ikPinkyToeGroup, ikAnkleSdk)
-    cmds.parent (ikAnkleGroup, globalFootJointGroup)       
-    cmds.setAttr (ikAnkleGroup + '.visibility', 0, l=1)        
-
-    #Ik Control connections
-    cmds.connectAttr (ikControl[1] + '.rotateX', ikBallSdk + '.rotateX', f=1)
-    cmds.connectAttr (ikControl[1] + '.rotateY', ikBallSdk + '.rotateY', f=1)
-    cmds.connectAttr (ikControl[1] + '.rotateZ', ikBallSdk + '.rotateZ', f=1) 
-
-    #Foot Roll Connections
-    cmds.addAttr (configure, ln=sideName + type + 'ReverseFoot',  at='double', dv=0, k=1)
-    cmds.setAttr (configure + '.' + sideName + type + 'ReverseFoot', channelBox=1)
-
-    cmds.addAttr (configure, ln=sideName + type + 'FootRoll',  at='double', dv=0, k=1)
-    cmds.addAttr (configure, ln=sideName + type + 'FootRollAngle',  at='double', dv=0, k=1)
-    cmds.addAttr (configure, ln=sideName + type + 'FootTwist',  at='double', dv=0, k=1)
-    cmds.addAttr (configure, ln=sideName + type + 'ToeRoll',  at='double', dv=0, k=1)
-    cmds.addAttr (configure, ln=sideName + type + 'ToeTwist',  at='double', dv=0, k=1)
-    cmds.addAttr (configure, ln=sideName + type + 'BallLift',  at='double',dv=0, k=1)
-    cmds.addAttr (configure, ln=sideName + type + 'HeelTwist',  at='double', dv=0, k=1)
-
-    cmds.setDrivenKeyframe (ikBallRollSdk + '.rotateY', cd=configure + '.' + sideName + type + 'FootRoll', itt='linear', ott='linear', dv=0, v=0)       
-    cmds.setDrivenKeyframe (ikHeelRollSdk + '.rotateX', cd=configure + '.' + sideName + type + 'FootRoll', itt='linear', ott='linear', dv=0, v=0) 
-    cmds.setDrivenKeyframe (ikBallRollSdk + '.rotateY', cd=configure + '.' + sideName + type + 'FootRoll', itt='linear', ott='linear', dv=180, v=-180)       
-    cmds.setDrivenKeyframe (ikHeelRollSdk + '.rotateX', cd=configure + '.' + sideName + type + 'FootRoll', itt='linear', ott='linear', dv=180, v=0)       
-    cmds.setDrivenKeyframe (ikBallRollSdk + '.rotateY', cd=configure + '.' + sideName + type + 'FootRoll', itt='linear', ott='linear', dv=-180, v=0)       
-    cmds.setDrivenKeyframe (ikHeelRollSdk + '.rotateX', cd=configure + '.' + sideName + type + 'FootRoll', itt='linear', ott='linear', dv=-180, v=-180) 
-
-    cmds.connectAttr (configure + '.' + sideName + type + 'FootRollAngle', ikToeSdk + '.rotateY', f=1)
-    cmds.connectAttr (configure + '.' + sideName + type + 'FootTwist', ikBallRollSdk + '.rotateZ', f=1)
-
-    cmds.setDrivenKeyframe (ikToeRollSdk + '.rotateY', cd=configure + '.' + sideName + type + 'ToeRoll', itt='linear', ott='linear', dv=0, v=0)       
-    cmds.setDrivenKeyframe (ikHeelSdk + '.rotateX', cd=configure + '.' + sideName + type + 'ToeRoll', itt='linear', ott='linear', dv=0, v=0)  
-
-    cmds.setDrivenKeyframe (ikToeRollSdk + '.rotateY', cd=configure + '.' + sideName + type + 'ToeRoll', itt='linear', ott='linear', dv=180, v=-180)       
-    cmds.setDrivenKeyframe (ikHeelSdk + '.rotateX', cd=configure + '.' + sideName + type + 'ToeRoll', itt='linear', ott='linear', dv=180, v=0)
-
-    cmds.setDrivenKeyframe (ikToeRollSdk + '.rotateY', cd=configure + '.' + sideName + type + 'ToeRoll', itt='linear', ott='linear', dv=-180, v=0)       
-    cmds.setDrivenKeyframe (ikHeelSdk + '.rotateX', cd=configure + '.' + sideName + type + 'ToeRoll', itt='linear', ott='linear', dv=-180, v=-180)
-
-    cmds.connectAttr (configure + '.' + sideName + type + 'ToeTwist', ikToeRollSdk + '.rotateZ', f=1)
-
-    cmds.setDrivenKeyframe (ikPinkyToeSdk + '.rotateZ', cd=configure + '.' + sideName + type + 'BallLift', itt='linear', ott='linear', dv=0, v=0)       
-    cmds.setDrivenKeyframe (ikBigToeSdk + '.rotateZ', cd=configure + '.' + sideName + type + 'BallLift', itt='linear', ott='linear', dv=0, v=0)
-
-    cmds.setDrivenKeyframe (ikPinkyToeSdk + '.rotateZ', cd=configure + '.' + sideName + type + 'BallLift', itt='linear', ott='linear', dv=180, v=-180)       
-    cmds.setDrivenKeyframe (ikBigToeSdk + '.rotateZ', cd=configure + '.' + sideName + type + 'BallLift', itt='linear', ott='linear', dv=180, v=0)                
-
-    cmds.setDrivenKeyframe (ikPinkyToeSdk + '.rotateZ', cd=configure + '.' + sideName + type + 'BallLift', itt='linear', ott='linear', dv=-180, v=0)       
-    cmds.setDrivenKeyframe (ikBigToeSdk + '.rotateZ', cd=configure + '.' + sideName + type + 'BallLift', itt='linear', ott='linear', dv=-180, v=180)   
-
-    cmds.connectAttr (configure + '.' + sideName + type + 'HeelTwist', ikHeelSdk + '.rotateY', f=1)
-    cmds.undoInfo(closeChunk=1)
-
-'''
+        pymel.select(cl=True)                   
+        pymel.undoInfo(closeChunk=1)         
+#End############################################################################################################################################
