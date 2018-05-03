@@ -40,7 +40,8 @@ class Generic (object):
     
     def __init__(self):
 
-        self.input = inputNames.Names() 
+        self.input = inputNames.Names()        
+ 
         
     
     def getNameStyle (self, components):
@@ -238,7 +239,7 @@ class Generic (object):
         self.snap(position, currentJoint)        
         pymel.makeIdentity(currentJoint, a=1, t=0, r=1, s=0, n=0)
         
-        print 'position', type(position)
+        #print 'position', type(position)
         
         if position.type()=='joint':
             angleValue = position.getAttr('preferredAngle')
@@ -343,7 +344,26 @@ class Generic (object):
                 node.setAttr(eachAttribute, keyable=False, channelBox=True)
             if type=='lockHide':                
                 node.setAttr(eachAttribute, lock=True, keyable=False, channelBox=False)
-          
+
+
+    def getHierarchys (self, root):
+        
+        if not root :
+            return None
+        
+        childObjects = [root]
+        currentChild = root.getChildren()
+        
+        if not currentChild:
+            return None
+
+        while currentChild:
+            childObjects.append(currentChild[0])
+            currentChild = currentChild[0].getChildren()
+        
+        return childObjects
+            
+    
     
     def padding (self, shot=0, pShot=0):
         shotSize = len(str(shot))

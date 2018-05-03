@@ -35,6 +35,7 @@ from module import openGeneric
 from module import inputNames
 from package import createLimb
 from package import createFoot
+from package import createFinger
 
 reload(openStyleSheet)
 reload(collectBundels)
@@ -43,7 +44,7 @@ reload(createLimb)
 reload(inputNames)
 reload(collectBundels)
 reload(createFoot)
-
+reload(createFinger)
 
 from maya import cmds
 from maya import mel
@@ -263,6 +264,7 @@ class Puppet (QtGui.QMainWindow):
         limb.create()
         
         
+        #create left foot puppet         
         leftBall = generic.getJointFromLabel(1, 'Ball', False)
         leftToe = generic.getJointFromLabel(1, 'Toe', False)   
         leftHeel = generic.getJointFromLabel(1, 'Heel', False)   
@@ -277,9 +279,21 @@ class Puppet (QtGui.QMainWindow):
                                 heel=leftHeel[0],
                                 pinkyToe=leftPinkyToe[0], 
                                 bigToe=leftBigToe[0],                            
-                                radius=radius) 
+                                radius=radius)  
+        foot.create()
+             
+        #create left finger puppet            
+        leftWrist = generic.getJointFromLabel(1, 'Wrist', False)
+        
+        finger = createFinger.Finger( side=self.input._leftSide,
+                                    type=self.input._armFinger,
+                                    wrist=leftWrist[0],                                
+                                    radius=radius) 
   
-        foot.create()        
+        finger.create()
+                     
+        
+        
                 
         #create left leg   
         

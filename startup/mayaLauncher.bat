@@ -31,6 +31,6 @@ echo %MAYA_PATH%
 
 start "" "%MAYA_PATH%"
 
-pause
+:pause
 
 : End: : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : : :

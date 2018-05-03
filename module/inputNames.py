@@ -62,10 +62,9 @@ class Names (object) :
         self._arm = 'Arm'
         self._armFinger = 'ArmFinger'
         
-        
-        
-        
-        
+        self._armCurl = 'Curl'
+        self._armTwist = 'Twist'
+        self._armRotate = 'Rotate'
 
         self._clavicle = 'Clavicle'
         self._shoulder = 'Shoulder'
