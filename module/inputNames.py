@@ -48,9 +48,8 @@ class Names (object) :
         
         self._hip = 'Hip'                 
         self._cog = 'COG'
-        self._spine1 = 'Spine1'
-        self._spine2 = 'Spine2'
-        self._spine3 = 'Spine3'
+        self._spine = 'Spine'
+        self._spineMid = 'Mid'
         
         self._chest = 'Chest'        
         self._neck = 'Neck'

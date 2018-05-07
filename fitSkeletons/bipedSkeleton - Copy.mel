@@ -23,24 +23,6 @@ global proc createSkeleton ()
 			setAttr ".typ" 18;
 			setAttr ".otp" -type "string" "Cog";
 			setAttr ".radi" 0.1;
-			
-		createNode joint -n "Spine" -p "Cog";
-			setAttr ".t" -type "double3" 0 1.2000000000000002 0 ;
-			setAttr ".mnrl" -type "double3" -360 -360 -360 ;
-			setAttr ".mxrl" -type "double3" 360 360 360 ;
-			setAttr ".dl" yes;
-			setAttr ".typ" 18;
-			setAttr ".otp" -type "string" "Spine";
-			setAttr ".radi" 0.1;
-		createNode joint -n "Chest" -p "Spine";
-			setAttr ".t" -type "double3" 0 1.1999999999999993 0 ;
-			setAttr ".mnrl" -type "double3" -360 -360 -360 ;
-			setAttr ".mxrl" -type "double3" 360 360 360 ;
-			setAttr ".dl" yes;
-			setAttr ".typ" 18;
-			setAttr ".otp" -type "string" "Chest";
-			setAttr ".radi" 0.1;			
-		/*	
 		createNode joint -n "Spine1" -p "Cog";
 			setAttr ".t" -type "double3" 0 0.79999999999999982 0 ;
 			setAttr ".mnrl" -type "double3" -360 -360 -360 ;
@@ -57,7 +39,6 @@ global proc createSkeleton ()
 			setAttr ".typ" 18;
 			setAttr ".otp" -type "string" "Spine2";
 			setAttr ".radi" 0.1;
-
 		createNode joint -n "Chest" -p "Spine2";
 			setAttr ".t" -type "double3" 0 0.79999999999999893 0 ;
 			setAttr ".mnrl" -type "double3" -360 -360 -360 ;
@@ -65,8 +46,7 @@ global proc createSkeleton ()
 			setAttr ".dl" yes;
 			setAttr ".typ" 18;
 			setAttr ".otp" -type "string" "Chest";
-			setAttr ".radi" 0.1;			
-		*/	
+			setAttr ".radi" 0.1;
 		createNode joint -n "L_Clavicle" -p "Chest";
 			setAttr ".t" -type "double3" 0.15 0.59999999999999964 0 ;
 			setAttr ".mnrl" -type "double3" -360 -360 -360 ;

@@ -33,9 +33,10 @@ from module import openStyleSheet
 from module import collectBundels
 from module import openGeneric
 from module import inputNames
-from package import createLimb
+from package import createLimb, createSpine
 from package import createFoot
 from package import createFinger
+from package import createSpine
 
 reload(openStyleSheet)
 reload(collectBundels)
@@ -45,6 +46,7 @@ reload(inputNames)
 reload(collectBundels)
 reload(createFoot)
 reload(createFinger)
+reload(createSpine)
 
 from maya import cmds
 from maya import mel
@@ -253,44 +255,61 @@ class Puppet (QtGui.QMainWindow):
             warnings.warn ('leg fit skeleton is wrong.')            
             return None  
         
-        #create left leg puppet        
-        limb = createLimb.Limb( side=self.input._leftSide,
-                                type=self.input._leg,
-                                start={self.input._pelvis: leftPelvis[0]},
-                                middle={self.input._knee: leftKnee[0]},
-                                end={self.input._ankle: leftAnkle[0]},
-                                poleVector={self.input._legPoleVector: leftPoleVector[0]},
-                                radius=radius)        
-        limb.create()
+        #=======================================================================
+        # #create left leg puppet        
+        # limb = createLimb.Limb( side=self.input._leftSide,
+        #                         type=self.input._leg,
+        #                         start={self.input._pelvis: leftPelvis[0]},
+        #                         middle={self.input._knee: leftKnee[0]},
+        #                         end={self.input._ankle: leftAnkle[0]},
+        #                         poleVector={self.input._legPoleVector: leftPoleVector[0]},
+        #                         radius=radius)        
+        # limb.create()
+        # 
+        # 
+        # #create left foot puppet         
+        # leftBall = generic.getJointFromLabel(1, 'Ball', False)
+        # leftToe = generic.getJointFromLabel(1, 'Toe', False)   
+        # leftHeel = generic.getJointFromLabel(1, 'Heel', False)   
+        # leftPinkyToe = generic.getJointFromLabel(1, 'PinkyToe', False)   
+        # leftBigToe = generic.getJointFromLabel(1, 'BigToe', False)           
+        #  
+        # foot = createFoot.Foot( side=self.input._leftSide,
+        #                         type=self.input._foot,
+        #                         ankle=leftAnkle[0],                                
+        #                         ball=leftBall[0],
+        #                         toe=leftToe[0],                               
+        #                         heel=leftHeel[0],
+        #                         pinkyToe=leftPinkyToe[0], 
+        #                         bigToe=leftBigToe[0],                            
+        #                         radius=radius)  
+        # foot.create()
+        #      
+        # #create left finger puppet            
+        # leftWrist = generic.getJointFromLabel(1, 'Wrist', False)
+        # 
+        # finger = createFinger.Finger( side=self.input._leftSide,
+        #                             type=self.input._armFinger,
+        #                             wrist=leftWrist[0],                                
+        #                             radius=radius) 
+        # finger.create()
+        #=======================================================================
         
         
-        #create left foot puppet         
-        leftBall = generic.getJointFromLabel(1, 'Ball', False)
-        leftToe = generic.getJointFromLabel(1, 'Toe', False)   
-        leftHeel = generic.getJointFromLabel(1, 'Heel', False)   
-        leftPinkyToe = generic.getJointFromLabel(1, 'PinkyToe', False)   
-        leftBigToe = generic.getJointFromLabel(1, 'BigToe', False)           
-         
-        foot = createFoot.Foot( side=self.input._leftSide,
-                                type=self.input._foot,
-                                ankle=leftAnkle[0],                                
-                                ball=leftBall[0],
-                                toe=leftToe[0],                               
-                                heel=leftHeel[0],
-                                pinkyToe=leftPinkyToe[0], 
-                                bigToe=leftBigToe[0],                            
-                                radius=radius)  
-        foot.create()
-             
-        #create left finger puppet            
-        leftWrist = generic.getJointFromLabel(1, 'Wrist', False)
-        
-        finger = createFinger.Finger( side=self.input._leftSide,
-                                    type=self.input._armFinger,
-                                    wrist=leftWrist[0],                                
+        #create spine puppet            
+        cog = generic.getJointFromLabel(0, 'Cog', False)
+        spine = generic.getJointFromLabel(0, 'Spine', False)
+        chest = generic.getJointFromLabel(0, 'Chest', False)
+        hip = generic.getJointFromLabel(0, 'Hip', False)        
+       
+        spine = createSpine.Spine( side=self.input._leftSide,
+                                    type=self.input._spine,
+                                    cog=cog[0],
+                                    spine=spine[0],  
+                                    chest=chest[0],
+                                    hip=hip[0], 
                                     radius=radius) 
-  
-        finger.create()
+        spine.create()        
                      
         
         

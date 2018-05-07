@@ -213,8 +213,8 @@ class Limb(object):
             pymel.delete (ikHandleGroup)          
          
         ikHandleGroup = generic.createGroup(ikHandle[0], ikHandleGroup)
-        ikHandle[0].setParent(ikHandleGroup)
         ikHandleGroup.setParent(jointGroup)
+        ikHandle[0].setParent(ikHandleGroup)
          
         #IK Ankle Control        
         nullAnkleIK, shapeAnkleIK, offsetAnkleIK, groupAnkleIK = self.control.create(type='Cube', name='{}_{}'.format(self.endType, self.input._ik), side=self.side, radius=self.radius/1.5, orientation=[0,0,0], positionNode=ikHandleGroup)    

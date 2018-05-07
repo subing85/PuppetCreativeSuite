@@ -54,8 +54,11 @@ class Controls(object):
         if type=='Cube' :
             currentControl = pymel.mel.eval ('curve -d 1 -p 1 1 1 -p 1 1 -1 -p -1 1 -1 -p -1 -1 -1 -p 1 -1 -1 -p 1 -1 1 -p -1 -1 1 -p -1 1 1 -p 1 1 1 -p 1 -1 1 -p 1 -1 -1 -p 1 1 -1 -p -1 1 -1 -p -1 1 1 -p -1 -1 1 -p -1 -1 -1 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 -k 8 -k 9 -k 10 -k 11 -k 12 -k 13 -k 14 -k 15 ;')
     
+        if type=='CubeIK' :
+            currentControl = pymel.mel.eval ('curve -d 1 -p -1 0.5 -1 -p -1 0.5 1 -p -1 -0.5 1 -p 1 -0.5 1 -p 1 0.5 1 -p 1 0.5 -1 -p 1 -0.5 -1 -p -1 -0.5 -1 -p -1 0.5 -1 -p 1 0.5 -1 -p 1 -0.5 -1 -p 1 -0.5 1 -p 1 0.5 1 -p -1 0.5 1 -p -1 -0.5 1 -p -1 -0.5 -1 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 -k 8 -k 9 -k 10 -k 11 -k 12 -k 13 -k 14 -k 15 ;')
+    
         if type=='Pentagon' :
-            currentControl = pymel.mel.eval ('curve -d 1 -p -0.671444 0 -1 -p -1 0 0.303691 -p 0 0 1 -p 1 0 0.303691 -p 0.671444 0 -1 -p -0.671444 0 -1 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 ;')
+            currentControl = pymel.mel.eval ('curve -d 1 -p -0.5 0 -1 -p -1 0 0.369504 -p 0 0 1 -p 1 0 0.369504 -p 0.5 0 -1 -p -0.5 0 -1 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 ;')
        
         if type=='SingleArrow' :
             currentControl = pymel.mel.eval ('curve -d 1 -p 0 0 1 -p 1 0 0 -p 0.357143 0 0 -p 0.357143 0 -1 -p -0.357143 0 -1 -p -0.357143 0 0 -p -1 0 0 -p 0 0 1 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 ;')
@@ -68,7 +71,7 @@ class Controls(object):
 
         if type=='LongCube':            
             currentControl = pymel.mel.eval ('curve -d 1 -p -1 2.5 -1 -p -1 2.5 1 -p -1 0 1 -p 1 0 1 -p 1 2.5 1 -p 1 2.5 -1 -p 1 0 -1 -p -1 0 -1 -p -1 2.5 -1 -p 1 2.5 -1 -p 1 0 -1 -p 1 0 1 -p 1 2.5 1 -p -1 2.5 1 -p -1 0 1 -p -1 0 -1 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 -k 8 -k 9 -k 10 -k 11 -k 12 -k 13 -k 14 -k 15 ;')
-                
+
         if type=='IKFK' :
             ikIControl = pymel.mel.eval ('curve -d 1 -p -3.064299 0 2.088051 -p -2.822937 0 2.088051 -p -2.822937 0 3.911949 -p -3.064299 0 3.911949 -p -3.064299 0 2.088051 -k 0 -k 1 -k 2 -k 3 -k 4 ;')
             ikKControl = pymel.mel.eval ('curve -d 1 -p -2.407397 0 2.088051 -p -2.407397 0 3.911949 -p -2.166035 0 3.911949 -p -2.166035 0 3.27993 -p -1.867443 0 2.988803 -p -1.218006 0 3.911949 -p -0.899508 0 3.911949 -p -1.698241 0 2.827066 -p -0.9331 0 2.088051 -p -1.260306 0 2.088051 -p -2.166035 0 2.992535 -p -2.166035 0 2.088051 -p -2.407397 0 2.088051 -k 0 -k 1 -k 2 -k 3 -k 4 -k 5 -k 6 -k 7 -k 8 -k 9 -k 10 -k 11 -k 12 ;')
